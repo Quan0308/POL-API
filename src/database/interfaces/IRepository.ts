@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DeepPartial, FindManyOptions, FindOneOptions } from 'typeorm'
 
-
 export interface IRepository<T> {
     create(data: DeepPartial<T>): T;
     createMany(data: DeepPartial<T>[]): T[];
