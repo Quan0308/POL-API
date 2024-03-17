@@ -1,72 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-    private users = [
-        {
-            "id": 1,
-            "name": "Duy Quan",
-            "role": "INTERN"
-        },
-        {
-            "id": 2,
-            "name": "Anh Thu",
-            "role": "ADMIN"
-        },
-        {
-            "id": 3,
-            "name": "Duc Viet",
-            "role": "INTERN"
-        },
-        {
-            "id": 4,
-            "name": "Ngan Truc",
-            "role": "ADMIN"
-        },
-        {
-            "id": 5,
-            "name": "Nhat Minh",
-            "role": "INTERN"
-        }
-    ]
+  create(createUserDto: CreateUserDto) {
+    return 'This action adds a new user';
+  }
 
-    findAll(role?: 'INTERN' | 'ADMIN' | 'ENGINEER') {
-        if(role) {
-            return this.users.filter(u => u.role === role)
-        }
-        return this.users
-    }
+  findAll() {
+    return `This action returns all users`;
+  }
 
-    findOne(id: number) {
-        const user = this.users.find(u => u.id === id)
-        return user
-    }
+  findOne(id: number) {
+    return `This action returns a #${id} user`;
+  }
 
-    create(user: {name: string, role: 'INTERN' | 'ENGINEER' | 'ADMIN'}) {
-        const usersByHighestId = [...this.users].sort((a, b) => b.id - a.id)
-        const newUser = {
-            id: usersByHighestId[0].id + 1,
-            ...user
-        }
-        this.users.push(newUser)
-        return newUser
-    }
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user`;
+  }
 
-    update(id: number, updatedUser: {name?: string, role?: 'INTERN' | 'ENGINEER' | 'ADMIN'}) {
-        this.users = this.users.map(u => {
-            if(u.id === id)
-                return {...u, ...updatedUser}
-            return u
-        })
-        
-        return this.findOne(id)
-    }
-
-    delete(id: number) {
-        const removedUser = this.findOne(id)
-        this.users = this.users.filter(u => u.id != id)
-
-        return removedUser
-    }
-
+  remove(id: number) {
+    return `This action removes a #${id} user`;
+  }
 }
