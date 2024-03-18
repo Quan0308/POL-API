@@ -1,14 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Patch, 
+  Param, 
+  Delete, 
+  ParseIntPipe, 
+  ValidationPipe,
+  UseInterceptors 
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { ValidationPipe } from '@nestjs/common';
+import { CreateUserDto } from '../../dto/create-user.dto';
+import { UpdateUserDto } from '../../dto/update-user.dto';
+import { 
+  ResponseMessage, 
+  TransformationInterceptor, 
+  USER_MESSAGE 
+} from 'src/interceptors/response';
 
+@UseInterceptors(TransformationInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ResponseMessage(USER_MESSAGE.USER_CREATED)
   create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }

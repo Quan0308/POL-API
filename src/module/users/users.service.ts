@@ -21,7 +21,7 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.userRepository.find();
   }
 
   async findOne(id: number) {
@@ -29,6 +29,10 @@ export class UsersService {
           .createQueryBuilder('user')
           .where('user.id = :id', { id })
           .getOne();
+    
+    if(!user) {
+      throw new Error('User not found');
+    }
     return user;
   }
 
