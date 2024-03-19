@@ -7,7 +7,7 @@ import {
   CallHandler,
 } from '@nestjs/common'
 
-import { Observable } from 'rxjs'
+import { Observable, throwError } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { ResponseMessageKey } from './response.decorator'
 
@@ -29,9 +29,9 @@ export class TransformationInterceptor<T>
 
     return next.handle().pipe(
       map((data) => ({
-        data,
         success: context.switchToHttp().getResponse().statusCode < 400,
-        message: responseMessage
+        message: responseMessage,
+        data,
       }))
     )
   }
