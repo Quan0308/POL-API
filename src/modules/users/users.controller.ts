@@ -17,7 +17,7 @@ import {
   ResponseMessage, 
   TransformationInterceptor, 
   USER_MESSAGE 
-} from 'src/interceptors/response';
+} from 'src/ultils/response';
 
 @UseInterceptors(TransformationInterceptor)
 @Controller('users')

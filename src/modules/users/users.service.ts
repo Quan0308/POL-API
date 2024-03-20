@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { UpdateUserDto } from 'src/dto/update-user.dto';
-import { User } from 'src/entity/user.entity';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class UsersService {
           .getOne();
     
     if(!user) {
-      throw new Error('User not found');
+      throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
   }
