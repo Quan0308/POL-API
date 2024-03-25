@@ -21,9 +21,13 @@ export class CommonService {
         });
 
         return new Promise((resolve, reject) => {
-            blobStream.on('finish', () => {
-                const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-                resolve(url);
+            blobStream.on('finish', () => { 
+                resolve(fileUpload.getSignedUrl({
+                    action: 'read',
+                    expires: '03-09-2491'
+                }).then((url) => {
+                    return url[0];
+                }));
             });
 
             blobStream.on('error', (error) => {
