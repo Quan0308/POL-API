@@ -28,7 +28,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOne(id: number) {
+  async getUserById(id: number) {
     const user = await this.userRepository
           .createQueryBuilder('user')
           .where('user.id = :id', { id })
