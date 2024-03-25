@@ -13,7 +13,8 @@ import { BaseException } from 'src/ultils/exception/base.exception.filter';
     ConfigModule.forRoot(), 
     TypeOrmModule.forRootAsync(TypeOrmConfigAsync),
     UsersModule, 
-    PostModule],
+    PostModule
+  ],
   controllers: [AppController],
   providers: [
     AppService,
