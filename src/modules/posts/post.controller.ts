@@ -13,6 +13,6 @@ export class PostController {
     @ResponseMessage(POST_MESSAGE.POST_CREATED)
     @UseInterceptors(FileInterceptor("file"))
     async savePost(@UploadedFile() file, @Body(ValidationPipe) content: CreatePostDto) {
-        return await this.postService.savePost(file, content);
+        return await this.postService.create(file, content);
     }
 }

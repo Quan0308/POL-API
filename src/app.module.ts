@@ -7,13 +7,15 @@ import { TypeOrmConfigAsync } from 'src/config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { BaseException } from 'src/ultils/exception/base.exception.filter';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), 
     TypeOrmModule.forRootAsync(TypeOrmConfigAsync),
     UsersModule, 
-    PostModule
+    PostModule, 
+    CommentsModule
   ],
   controllers: [AppController],
   providers: [
