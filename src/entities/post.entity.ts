@@ -19,7 +19,7 @@ export class Post extends BaseEntity {
     @Column()
     caption: string;
 
-    @Column("simple-array")
+    @Column("int", {array: true, default: []})
     visibleToIds: number[];
 
     @Column()

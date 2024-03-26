@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dto/create-user.dto';
-import { UpdateUserDto } from 'src/dto/update-user.dto';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 
@@ -24,10 +23,6 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.userRepository.find();
-  }
-
   async getUserById(id: number) {
     const user = await this.userRepository
           .createQueryBuilder('user')
@@ -38,13 +33,5 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
