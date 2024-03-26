@@ -3,16 +3,14 @@ import {
   Get, 
   Post, 
   Body, 
-  Patch, 
   Param, 
-  Delete, 
   ParseIntPipe, 
   ValidationPipe,
   UseInterceptors 
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { PostService } from '../posts/post.service';
 import { CreateUserDto } from '../../dto/create-user.dto';
-import { UpdateUserDto } from '../../dto/update-user.dto';
 import { 
   ResponseMessage, 
   TransformationInterceptor, 
@@ -22,7 +20,10 @@ import {
 @UseInterceptors(TransformationInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly postService: PostService
+  ) {}
 
   @Post()
   @ResponseMessage(USER_MESSAGE.USER_CREATED)
@@ -30,23 +31,8 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getUserById(id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Get(':userId/viewable-posts')
+  async getViewablePosts(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.postService.getViewablePosts(userId);
   }
 }

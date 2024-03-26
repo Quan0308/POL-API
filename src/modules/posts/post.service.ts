@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { CommonService } from "../common/common.service";
 import { UsersService } from "../users/users.service";
 import { CreatePostDto } from "src/dto/post/create-post.dto";
@@ -15,20 +15,25 @@ export class PostService {
         private readonly usersService: UsersService
     ) {}
 
+    async getViewablePosts(userId: number) {
+        const user = await this.usersService.getUserById(userId);
+        const posts = await this.postRepository
+            .createQueryBuilder('post')
+            .where(':userId = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { userId: user.id })
+            .getMany();
+        return posts;
+    }
+
     async savePost(file, content: CreatePostDto) {
         try {
             const { authorId, caption, visibleToIds } = content;
             const author = await this.usersService.getUserById(authorId);
-            if(!author) {
-                throw new NotFoundException(`User with id ${authorId} not found`);
-            }
-
             const imageUrl = await this.commonService.uploadImage(file);
 
             const newPost = this.postRepository.create();
-            newPost.authorId = authorId;
+            newPost.authorId = author.id;
             newPost.caption = caption;
-            newPost.visibleToIds = visibleToIds;
+            newPost.visibleToIds = visibleToIds.concat(author.id);
             newPost.imageUrl = imageUrl;
             return await this.postRepository.save(newPost);
         } catch (error) {
