@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateCommentDto } from 'src/dto/comment/create-comment.dto';
+import { CreateCommentDto } from 'src/dto/comment';
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';

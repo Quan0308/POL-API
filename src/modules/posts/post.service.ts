@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { CommonService } from "../common/common.service";
-import { CreatePostDto } from "src/dto/post/create-post.dto";
 import { Repository } from "typeorm";
 import { Post } from "src/entities/post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { CreatePostDto, LoadPost } from "src/dto/post";
 
 @Injectable()
 export class PostService {
@@ -13,17 +13,26 @@ export class PostService {
         private readonly commonService: CommonService,
     ) {}
 
-    async getViewablePosts(userId: number) {
+    async getViewablePosts(userId: number): Promise<LoadPost[]> {
         try 
         {
             const posts = await this.postRepository
                 .createQueryBuilder('post')
-                .leftJoinAndSelect('post.author', 'author')
-                .leftJoinAndSelect('post.comments', 'comments')
-                .leftJoinAndSelect('post.reactions', 'reactions')
+                .select(['post.id', 'post.caption', 'post.imageUrl', 'post.createdAt'])
+                .orderBy('post.createdAt', 'DESC')
+                .leftJoin('post.author', 'author')
+                .addSelect(['author.id', 'author.Avatar', 'author.username'])
+                .leftJoin('post.comments', 'comments')
+                .loadRelationCountAndMap('post.countComments', 'post.comments')
+                .leftJoin('post.reactions', 'reactions')
+                .leftJoin('reactions.author', 'reactionAuthor')
+                .addSelect(['reactions.type', 'reactionAuthor.Avatar', 'reactionAuthor.username'])
                 .where(':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { id: userId })
                 .getMany();
-            return posts;
+                
+            return posts.map(p => {
+                return new LoadPost(p);
+            });  
         } catch (error) {
             console.log(error);
             throw InternalServerErrorException;
