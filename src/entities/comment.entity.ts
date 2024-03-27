@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Post } from "./post.entity";
 
@@ -10,15 +10,13 @@ export class Comment extends BaseEntity {
     @PrimaryColumn()
     authorId: number;
 
-    @ManyToOne(type => User)
-    @JoinColumn({name: "authorId"})
+    @ManyToOne(type => User, user => user.comments)
     author: User;
 
     @PrimaryColumn()
     postId: number;
 
-    @ManyToOne(type => Post)
-    @JoinColumn({name: "postId"})
+    @ManyToOne(type => Post, post => post.comments)
     post: Post;
 
     @Column({default: new Date()})
