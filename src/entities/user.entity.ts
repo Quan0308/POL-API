@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
+import { Reaction } from './reaction.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -33,4 +34,7 @@ export class User extends BaseEntity {
 
     @OneToMany(type => Comment, comment => comment.author)
     comments: Comment[]
+
+    @OneToMany(type => Reaction, reaction => reaction.author)
+    reactions: Reaction[]
 }
