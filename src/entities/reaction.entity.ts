@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToOne, PrimaryColumn, JoinColumn } from "typeorm";
+import { BaseEntity, Entity, Column, ManyToOne, PrimaryColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Post } from "./post.entity";
 
@@ -7,15 +7,13 @@ export class Reaction extends BaseEntity {
     @PrimaryColumn()
     authorId: number;
 
-    @ManyToOne(type => User)
-    @JoinColumn({name: "authorId"})
+    @ManyToOne(type => User, user => user.reactions)
     author: User;
 
     @PrimaryColumn()
     postId: number; 
 
-    @ManyToOne(type => Post)
-    @JoinColumn({name: "postId"})
+    @ManyToOne(type => Post, post => post.reactions)
     post: Post;
     
     @Column({default: new Date()})

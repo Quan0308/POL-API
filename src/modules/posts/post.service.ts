@@ -1,10 +1,9 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { CommonService } from "../common/common.service";
-import { UsersService } from "../users/users.service";
-import { CreatePostDto } from "src/dto/post/create-post.dto";
 import { Repository } from "typeorm";
 import { Post } from "src/entities/post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { CreatePostDto, LoadPost } from "src/dto/post";
 
 @Injectable()
 export class PostService {
@@ -12,29 +11,58 @@ export class PostService {
         @InjectRepository(Post)
         private postRepository: Repository<Post>,
         private readonly commonService: CommonService,
-        private readonly usersService: UsersService
     ) {}
 
-    async getViewablePosts(userId: number) {
-        const user = await this.usersService.getUserById(userId);
-        const posts = await this.postRepository
-            .createQueryBuilder('post')
-            .where(':userId = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { userId: user.id })
-            .getMany();
-        return posts;
+    async getViewablePosts(userId: number): Promise<LoadPost[]> {
+        try 
+        {
+            const posts = await this.postRepository
+                .createQueryBuilder('post')
+                .select(['post.id', 'post.caption', 'post.imageUrl', 'post.createdAt'])
+                .orderBy('post.createdAt', 'DESC')
+                .leftJoin('post.author', 'author')
+                .addSelect(['author.id', 'author.Avatar', 'author.username'])
+                .leftJoin('post.comments', 'comments')
+                .loadRelationCountAndMap('post.countComments', 'post.comments')
+                .leftJoin('post.reactions', 'reactions')
+                .leftJoin('reactions.author', 'reactionAuthor')
+                .addSelect(['reactions.type', 'reactionAuthor.Avatar', 'reactionAuthor.username'])
+                .where(':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { id: userId })
+                .getMany();
+                
+            return posts.map(p => {
+                return new LoadPost(p);
+            });  
+        } catch (error) {
+            console.log(error);
+            throw InternalServerErrorException;
+        }
     }
 
-    async savePost(file, content: CreatePostDto) {
+    async getPostById(postId: number) {
+        const post = await this.postRepository
+            .createQueryBuilder('post')
+            .where('post.id = :postId', { postId })
+            .getOne();
+        
+        if(!post) {
+            throw new NotFoundException(`Post with id ${postId} not found`);
+        }
+        return post;
+    }
+
+    async create(file, content: CreatePostDto) {
         try {
             const { authorId, caption, visibleToIds } = content;
-            const author = await this.usersService.getUserById(authorId);
             const imageUrl = await this.commonService.uploadImage(file);
-
-            const newPost = this.postRepository.create();
-            newPost.authorId = author.id;
-            newPost.caption = caption;
-            newPost.visibleToIds = visibleToIds.concat(author.id);
-            newPost.imageUrl = imageUrl;
+            const newPost = this.postRepository.create(
+                {
+                    authorId,
+                    caption,
+                    visibleToIds: visibleToIds.concat(authorId).sort(),
+                    imageUrl,
+                }
+            );
             return await this.postRepository.save(newPost);
         } catch (error) {
             console.log(error);

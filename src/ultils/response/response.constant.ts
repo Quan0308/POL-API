@@ -11,3 +11,17 @@ export const POST_MESSAGE = {
     POST_UPDATED: 'Post Updated',
     POST_DELETED: 'Post Deleted'
 }
+
+export const COMMENT_MESSAGE = {
+    COMMENT_CREATED: 'Comment Created',
+    COMMENT_INSERTED: 'Comment Inserted',
+    COMMENT_UPDATED: 'Comment Updated',
+    COMMENT_DELETED: 'Comment Deleted'
+}
+
+export const REACTION_MESSAGE = {
+    REACTION_CREATED: 'Reaction Created',
+    REACTION_INSERTED: 'Reaction Inserted',
+    REACTION_UPDATED: 'Reaction Updated',
+    REACTION_DELETED: 'Reaction Deleted'
+}
