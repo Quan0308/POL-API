@@ -1,9 +1,8 @@
-import { Controller, Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentDto } from 'src/dto';
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from '../users/users.service';
 import { PostService } from '../posts/post.service';
 
 @Injectable()
@@ -11,7 +10,6 @@ export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
-    private readonly usersService: UsersService,
     
     @Inject(forwardRef(() => PostService))
     private readonly postsService: PostService

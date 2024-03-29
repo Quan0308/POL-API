@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { PostModule } from '../posts/post.module';
 import { CommentsModule } from '../comments/comments.module';
+import { GroupsModule } from '../groups/groups.module';
 
 @Module({
   imports: [
     forwardRef(() => PostModule), 
     forwardRef(() => CommentsModule),
+    forwardRef(() => GroupsModule),
     TypeOrmModule.forFeature([User])
   ],
   controllers: [UsersController],

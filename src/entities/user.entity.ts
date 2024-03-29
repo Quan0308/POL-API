@@ -39,8 +39,8 @@ export class User extends BaseEntity {
     @OneToMany(type => Reaction, reaction => reaction.author)
     reactions: Reaction[]
 
-    @Column()
-    Avatar: string;
+    @Column({nullable: true})
+    avatar: string;
 
     @OneToMany(type => Group, group => group.owner)
     groups: Group[];

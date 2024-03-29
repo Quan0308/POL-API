@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
+import { GroupsService } from '../groups/groups.service';
 import { CreateUserDto } from 'src/dto';
 import { 
   ResponseMessage, 
@@ -22,7 +23,8 @@ import {
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly postService: PostService
+    private readonly postService: PostService,
+    private readonly groupService: GroupsService
   ) {}
 
   @Post()
@@ -34,5 +36,10 @@ export class UsersController {
   @Get(':userId/viewable-posts')
   async getViewablePosts(@Param('userId', ParseIntPipe) userId: number) {
     return await this.postService.getViewablePosts(userId);
+  }
+
+  @Get(':userId/groups')
+  async getGroupsOfUser(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.groupService.getGroupsOfUser(userId);
   }
 }
