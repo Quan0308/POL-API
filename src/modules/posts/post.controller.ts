@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UploadedFile, UseInterceptors, ValidationPipe } from "@nestjs/common";
 import { PostService } from "./post.service";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { CreatePostDto } from "src/dto/post/create-post.dto";
+import { CreatePostDto } from "src/dto";
 import { ResponseMessage, POST_MESSAGE, TransformationInterceptor } from "src/ultils/response";
 
 @UseInterceptors(TransformationInterceptor)

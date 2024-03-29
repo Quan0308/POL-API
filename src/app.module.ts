@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from 'src/app.service';
-import { UsersModule, PostModule, CommentsModule, ReactionsModule } from 'src/modules';
+import { UsersModule, PostModule, CommentsModule, ReactionsModule, GroupsModule } from 'src/modules';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigAsync } from 'src/config/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
@@ -15,7 +15,8 @@ import { BaseException } from 'src/ultils/exception/base.exception.filter';
     UsersModule, 
     PostModule, 
     CommentsModule, 
-    ReactionsModule
+    ReactionsModule, 
+    GroupsModule
   ],
   controllers: [AppController],
   providers: [
@@ -23,7 +24,7 @@ import { BaseException } from 'src/ultils/exception/base.exception.filter';
     {
       provide: APP_FILTER,
       useClass: BaseException
-    }
+    },
   ],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ import { CommonService } from "../common/common.service";
 import { Repository } from "typeorm";
 import { Post } from "src/entities/post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CreatePostDto, LoadPost } from "src/dto/post";
+import { CreatePostDto, LoadPost } from "src/dto";
 
 @Injectable()
 export class PostService {
@@ -27,6 +27,7 @@ export class PostService {
                 .leftJoin('post.reactions', 'reactions')
                 .leftJoin('reactions.author', 'reactionAuthor')
                 .addSelect(['reactions.type', 'reactionAuthor.Avatar', 'reactionAuthor.username'])
+                .orderBy('reactions.createdAt', 'DESC')
                 .where(':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { id: userId })
                 .getMany();
                 

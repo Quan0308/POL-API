@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
-import { CreateUserDto } from '../../dto/user/create-user.dto';
+import { CreateUserDto } from 'src/dto';
 import { 
   ResponseMessage, 
   TransformationInterceptor, 

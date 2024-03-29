@@ -1,6 +1,6 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Controller, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateCommentDto } from 'src/dto/comment';
+import { CreateCommentDto } from 'src/dto';
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
@@ -19,14 +19,11 @@ export class CommentsService {
 
   async create(createCommentDto: CreateCommentDto) {
     const { authorId, postId, content } = createCommentDto
-    const author = await this.usersService.getUserById(authorId)
-    const post = await this.postsService.getPostById(postId)
-
-    const newComment = this.commentRepository.create();
-    newComment.authorId = author.id
-    newComment.postId = post.id
-    newComment.content = content
-
+    const newComment = this.commentRepository.create({
+      authorId,
+      postId,
+      content
+    });
     return await this.commentRepository.save(newComment)
   }
 
