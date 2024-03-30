@@ -3,7 +3,7 @@ import { CommonService } from "../common/common.service";
 import { Repository } from "typeorm";
 import { Post } from "src/entities/post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CreatePostDto, LoadPost } from "src/dto/post";
+import { CreatePostDto, LoadPost } from "src/dto";
 
 @Injectable()
 export class PostService {
@@ -21,12 +21,13 @@ export class PostService {
                 .select(['post.id', 'post.caption', 'post.imageUrl', 'post.createdAt'])
                 .orderBy('post.createdAt', 'DESC')
                 .leftJoin('post.author', 'author')
-                .addSelect(['author.id', 'author.Avatar', 'author.username'])
+                .addSelect(['author.id', 'author.avatar', 'author.username'])
                 .leftJoin('post.comments', 'comments')
                 .loadRelationCountAndMap('post.countComments', 'post.comments')
                 .leftJoin('post.reactions', 'reactions')
                 .leftJoin('reactions.author', 'reactionAuthor')
-                .addSelect(['reactions.type', 'reactionAuthor.Avatar', 'reactionAuthor.username'])
+                .addSelect(['reactions.type', 'reactionAuthor.avatar', 'reactionAuthor.username'])
+                .orderBy('reactions.createdAt', 'DESC')
                 .where(':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { id: userId })
                 .getMany();
                 

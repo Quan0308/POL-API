@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Reaction } from 'src/entities/reaction.entity';
 import { Repository } from 'typeorm';
-import { CreateReactionDto } from 'src/dto/reaction';
+import { CreateReactionDto } from 'src/dto';
 @Injectable()
 export class ReactionsService {
     constructor(

@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 't
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
+import { Group } from './group.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -38,6 +39,12 @@ export class User extends BaseEntity {
     @OneToMany(type => Reaction, reaction => reaction.author)
     reactions: Reaction[]
 
-    @Column()
-    Avatar: string;
+    @Column({nullable: true})
+    avatar: string;
+
+    @OneToMany(type => Group, group => group.owner)
+    groups: Group[];
+
+    @OneToMany(type => Group, group => group.members)
+    memberOf: Group[];
 }
