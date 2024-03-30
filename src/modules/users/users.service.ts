@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/dto/user';
+import { CreateUserDto } from 'src/dto';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 
@@ -12,11 +12,7 @@ export class UsersService {
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const user = this.userRepository.create();
-      user.username = createUserDto.username;
-      user.email = createUserDto.email;
-      user.password = createUserDto.password;
-
+      const user = this.userRepository.create(createUserDto);
       return await this.userRepository.save(user);
     } catch (error) {
        throw InternalServerErrorException;
@@ -33,5 +29,19 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
+  }
+
+  async getUsersByIds(ids: number[], fields: string[]) {
+    try 
+    {
+      return await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id IN (:...ids)', { ids })
+            .select(fields)
+            .getMany();
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException;
+    }
   }
 }

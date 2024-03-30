@@ -1,6 +1,6 @@
 import { Controller, Post, Body, ValidationPipe, UseInterceptors } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from 'src/dto/comment/create-comment.dto';
+import { CreateCommentDto } from 'src/dto';
 import { TransformationInterceptor } from 'src/ultils/response';
 
 @Controller('comments')
