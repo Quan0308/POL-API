@@ -19,7 +19,7 @@ export class Comment extends BaseEntity {
     @ManyToOne(type => Post, post => post.comments)
     post: Post;
 
-    @Column({default: new Date()})
+    @Column()
     createdAt: Date;
 
     @Column()

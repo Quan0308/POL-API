@@ -20,7 +20,8 @@ export class CommentsService {
     const newComment = this.commentRepository.create({
       authorId,
       postId,
-      content
+      content,
+      createdAt: new Date()
     });
     return await this.commentRepository.save(newComment)
   }
@@ -31,6 +32,7 @@ export class CommentsService {
     const comments = await this.commentRepository
           .createQueryBuilder('comment')
           .where('comment.postId = :postId', { postId: post.id })
+          .orderBy('comment.createdAt', 'DESC')
           .getMany()
           
     return comments

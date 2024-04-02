@@ -16,7 +16,7 @@ export class Reaction extends BaseEntity {
     @ManyToOne(type => Post, post => post.reactions)
     post: Post;
     
-    @Column({default: new Date()})
+    @Column()
     createdAt: Date;
     
     @Column()
