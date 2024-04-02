@@ -21,10 +21,10 @@ export class User extends BaseEntity {
     @Column ({ default: true })
     isActive: boolean;
 
-    @Column ({ default: new Date()})
+    @Column ()
     createdAt: Date;
 
-    @Column ({ default: new Date()})
+    @Column ()
     updatedAt: Date;
 
     @Column ({ default: "System"})

@@ -22,6 +22,6 @@ export class Group extends BaseEntity {
     @JoinTable()
     members: User[];
 
-    @Column({default: new Date()})
+    @Column()
     createdAt: Date;
 }
