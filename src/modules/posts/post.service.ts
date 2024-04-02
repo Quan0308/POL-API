@@ -62,6 +62,7 @@ export class PostService {
                     caption,
                     visibleToIds: visibleToIds.concat(authorId).sort(),
                     imageUrl,
+                    createdAt: new Date()
                 }
             );
             return await this.postRepository.save(newPost);

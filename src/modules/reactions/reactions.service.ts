@@ -12,7 +12,11 @@ export class ReactionsService {
 
     async create(reaction: CreateReactionDto) {
         try {
-            const newReaction = this.reactionRepository.create(reaction);
+            const newReaction = this.reactionRepository.create(
+                {
+                    ...reaction,
+                    createdAt: new Date()
+                });
             return await this.reactionRepository.save(newReaction);
         } catch (error) {
             console.log(error);
