@@ -1,12 +1,12 @@
-import { IsNotEmpty } from "class-validator"
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateGroupDto {
-    @IsNotEmpty()
-    name: string
+  @IsNotEmpty()
+  name: string;
 
-    @IsNotEmpty()
-    ownerId: number
+  @IsNotEmpty()
+  ownerId: number;
 
-    @IsNotEmpty()
-    memberIds: number[]
+  @IsNotEmpty()
+  memberIds: number[];
 }
