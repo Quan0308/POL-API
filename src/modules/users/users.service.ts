@@ -75,7 +75,7 @@ export class UsersService {
         ...updatedUser,
         updatedAt: new Date(),
       });
-      return this.userRepository.findOne({ where: { id } });
+      return this.userRepository.findOne({ where: { id }, select: ['username'] });
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -99,7 +99,7 @@ export class UsersService {
         avatar: imageUrl,
         updatedAt: new Date(),
       });
-      return this.userRepository.findOne({ where: { id } });
+      return this.userRepository.findOne({ where: { id }, select: ['avatar']});
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -128,7 +128,7 @@ export class UsersService {
         ...updatedUser,
         updatedAt: new Date(),
       });
-      return this.userRepository.findOne({ where: { id } });
+      return null;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();

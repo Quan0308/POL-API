@@ -1,5 +1,7 @@
 export * from './user/create-user.dto';
 export * from './user/update-user.dto';
+export * from './user/update-password.dto';
+export * from './user/update-username.dto';
 
 export * from './reaction/create-reaction.dto';
 

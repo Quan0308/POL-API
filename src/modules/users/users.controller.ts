@@ -15,13 +15,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
 import { GroupsService } from '../groups/groups.service';
-import { CreateUserDto, UpdateUserDto } from 'src/dto';
+import { CreateUserDto, UpdateUserUsernameDto, UpdateUserPasswordDto } from 'src/dto';
 import {
   ResponseMessage,
   TransformationInterceptor,
   USER_MESSAGE,
 } from 'src/ultils/response';
-import { UpdateUserPasswordDto } from 'src/dto/user/update-password.dto';
 
 @UseInterceptors(TransformationInterceptor)
 @Controller('users')
@@ -54,13 +53,13 @@ export class UsersController {
     return await this.groupService.getGroupsOfUser(userId);
   }
 
-  @Patch(':userId/username')
+  @Put(':userId/username')
   @ResponseMessage(USER_MESSAGE.USER_UPDATED)
   async updateUsername(
     @Param('userId', ParseIntPipe) userId: number,
-    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+    @Body(ValidationPipe) updateUserUsernameDto: UpdateUserUsernameDto,
   ) {
-    return await this.usersService.updateUsername(userId, updateUserDto);
+    return await this.usersService.updateUsername(userId, updateUserUsernameDto);
   }
 
   @Put(':userId/avatar')
