@@ -6,13 +6,15 @@ import { User } from 'src/entities/user.entity';
 import { PostModule } from '../posts/post.module';
 import { CommentsModule } from '../comments/comments.module';
 import { GroupsModule } from '../groups/groups.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
-    forwardRef(() => PostModule), 
+    CommonModule,
+    forwardRef(() => PostModule),
     forwardRef(() => CommentsModule),
     forwardRef(() => GroupsModule),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [UsersController],
   providers: [UsersService],

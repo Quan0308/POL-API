@@ -1,18 +1,18 @@
-import { Reflector } from '@nestjs/core'
+import { Reflector } from '@nestjs/core';
 
 import {
   Injectable,
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-} from '@nestjs/common'
+} from '@nestjs/common';
 
-import { Observable, throwError } from 'rxjs'
-import { map } from 'rxjs/operators'
-import { ResponseMessageKey } from './response.decorator'
+import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ResponseMessageKey } from './response.decorator';
 
 export interface Response<T> {
-    data: T     
+  data: T;
 }
 
 @Injectable()
@@ -21,18 +21,20 @@ export class TransformationInterceptor<T>
 {
   constructor(private reflector: Reflector) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
-    const responseMessage = this.reflector.get<string>(
-      ResponseMessageKey,
-      context.getHandler()
-    ) ?? ''
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<Response<T>> {
+    const responseMessage =
+      this.reflector.get<string>(ResponseMessageKey, context.getHandler()) ??
+      '';
 
     return next.handle().pipe(
       map((data) => ({
         success: context.switchToHttp().getResponse().statusCode < 400,
         message: responseMessage,
         data,
-      }))
-    )
+      })),
+    );
   }
 }

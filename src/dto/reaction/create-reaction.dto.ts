@@ -1,12 +1,12 @@
-import { IsNotEmpty } from "class-validator"
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateReactionDto {
-    @IsNotEmpty()
-    authorId: number
+  @IsNotEmpty()
+  authorId: number;
 
-    @IsNotEmpty()
-    postId: number
+  @IsNotEmpty()
+  postId: number;
 
-    @IsNotEmpty()
-    type: string
+  @IsNotEmpty()
+  type: string;
 }
