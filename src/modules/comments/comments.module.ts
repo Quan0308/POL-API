@@ -7,13 +7,9 @@ import { Comment } from 'src/entities/comment.entity';
 import { PostModule } from '../posts/post.module';
 
 @Module({
-  imports: [
-    forwardRef( () => UsersModule), 
-    forwardRef( () => PostModule), 
-    TypeOrmModule.forFeature([Comment])
-  ],
+  imports: [forwardRef(() => UsersModule), forwardRef(() => PostModule), TypeOrmModule.forFeature([Comment])],
   controllers: [CommentsController],
   providers: [CommentsService],
-  exports: [CommentsService]
+  exports: [CommentsService],
 })
 export class CommentsModule {}

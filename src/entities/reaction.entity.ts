@@ -1,24 +1,24 @@
-import { BaseEntity, Entity, Column, ManyToOne, PrimaryColumn } from "typeorm";
-import { User } from "./user.entity";
-import { Post } from "./post.entity";
+import { BaseEntity, Entity, Column, ManyToOne, PrimaryColumn } from 'typeorm';
+import { User } from './user.entity';
+import { Post } from './post.entity';
 
 @Entity()
 export class Reaction extends BaseEntity {
-    @PrimaryColumn()
-    authorId: number;
+  @PrimaryColumn()
+  authorId: number;
 
-    @ManyToOne(type => User, user => user.reactions)
-    author: User;
+  @ManyToOne((type) => User, (user) => user.reactions)
+  author: User;
 
-    @PrimaryColumn()
-    postId: number; 
+  @PrimaryColumn()
+  postId: number;
 
-    @ManyToOne(type => Post, post => post.reactions)
-    post: Post;
-    
-    @Column()
-    createdAt: Date;
-    
-    @Column()
-    type: string;
+  @ManyToOne((type) => Post, (post) => post.reactions)
+  post: Post;
+
+  @Column()
+  createdAt: Date;
+
+  @Column()
+  type: string;
 }

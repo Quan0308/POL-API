@@ -5,10 +5,8 @@ import { Reaction } from 'src/entities/reaction.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Reaction])
-  ],
+  imports: [TypeOrmModule.forFeature([Reaction])],
   controllers: [ReactionsController],
-  providers: [ReactionsService]
+  providers: [ReactionsService],
 })
 export class ReactionsModule {}

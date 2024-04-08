@@ -1,50 +1,67 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
 import { Group } from './group.entity';
+import { FriendRequest } from './friend-request.entity';
 
 @Entity()
 export class User extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
-    
-    @Column()
-    username: string;
-    
-    @Column()
-    email: string;
-    
-    @Column()
-    password: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column ({ default: true })
-    isActive: boolean;
+  @Column({ unique: true })
+  username: string;
 
-    @Column ()
-    createdAt: Date;
+  @Column()
+  email: string;
 
-    @Column ()
-    updatedAt: Date;
+  @Column()
+  password: string;
 
-    @Column ({ default: "System"})
-    createdBy: string;
+  @Column({ default: true })
+  isActive: boolean;
 
-    @OneToMany(type => Post, post => post.author)
-    posts: Post[]
+  @Column()
+  createdAt: Date;
+  @Column()
+  @Column()
+  updatedAt: Date;
+  @Column()
+  @Column({ default: 'System' })
+  createdBy: string;
 
-    @OneToMany(type => Comment, comment => comment.author)
-    comments: Comment[]
+  @Column({ nullable: true })
+  avatar: string;
 
-    @OneToMany(type => Reaction, reaction => reaction.author)
-    reactions: Reaction[]
+  @Column('int', { array: true, default: [] })
+  friendIds: number[];
 
-    @Column({nullable: true})
-    avatar: string;
+  @ManyToMany((type) => User)
+  @JoinTable()
+  friends: User[];
 
-    @OneToMany(type => Group, group => group.owner)
-    groups: Group[];
+  // Other relationships
+  @OneToMany((type) => Post, (post) => post.author)
+  posts: Post[];
 
-    @OneToMany(type => Group, group => group.members)
-    memberOf: Group[];
+  @OneToMany((type) => Comment, (comment) => comment.author)
+  comments: Comment[];
+
+  @OneToMany((type) => Reaction, (reaction) => reaction.author)
+  reactions: Reaction[];
+
+  @OneToMany((type) => Group, (group) => group.owner)
+  groups: Group[];
+
+  @OneToMany((type) => Group, (group) => group.members)
+  memberOf: Group[];
+
+  @ManyToMany((type) => FriendRequest, (friendRequest) => friendRequest.sender)
+  @JoinTable()
+  sentFriendRequests: FriendRequest[];
+
+  @ManyToMany((type) => FriendRequest, (friendRequest) => friendRequest.receiver)
+  @JoinTable()
+  receivedFriendRequests: FriendRequest[];
 }
