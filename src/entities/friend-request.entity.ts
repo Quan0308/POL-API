@@ -5,7 +5,7 @@ import { User } from './user.entity';
 export class FriendRequest {
   @PrimaryColumn()
   senderId: number;
-  
+
   @ManyToOne((type) => User, (user) => user.sentFriendRequests)
   sender: User;
 

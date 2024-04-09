@@ -34,9 +34,6 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   avatar: string;
 
-  @Column('int', { array: true, default: [] })
-  friendIds: number[];
-
   @ManyToMany((type) => User)
   @JoinTable()
   friends: User[];

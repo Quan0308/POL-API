@@ -19,6 +19,10 @@ export class FriendRequestService {
       if (!senderUser || !receiverUser) {
         throw new NotFoundException('User not found');
       }
+      const isFriend = senderUser.friends.some((friend) => friend.id === receiverId);
+      if (isFriend) {
+        throw new NotFoundException('You are already friends');
+      }
       const friendRequest = this.friendRequestRepository.create({
         senderId,
         receiverId,
@@ -48,12 +52,12 @@ export class FriendRequestService {
   async getFriendRequestsOfSender(userId: number) {
     try {
       const requests = await this.friendRequestRepository
-      .createQueryBuilder('friend_request')
-      .select(['friend_request.createdAt'])
-      .leftJoin('friend_request.receiver', 'receiver')
-      .addSelect(['receiver.id', 'receiver.username', 'receiver.avatar'])
-      .where('friend_request.senderId = :senderId', { senderId: userId })
-      .getMany();
+        .createQueryBuilder('friend_request')
+        .select(['friend_request.createdAt'])
+        .leftJoin('friend_request.receiver', 'receiver')
+        .addSelect(['receiver.id', 'receiver.username', 'receiver.avatar'])
+        .where('friend_request.senderId = :senderId', { senderId: userId })
+        .getMany();
       return requests;
     } catch (error) {
       console.log(error);
@@ -67,9 +71,9 @@ export class FriendRequestService {
         where: {
           senderId: sender,
           receiverId: receiver,
-        }
-      })
-      return await this.friendRequestRepository.remove(request)
+        },
+      });
+      return await this.friendRequestRepository.remove(request);
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -81,8 +85,8 @@ export class FriendRequestService {
         where: {
           senderId: sender,
           receiverId: receiver,
-        }
-      })
+        },
+      });
       if (!request) {
         throw new NotFoundException('Friend request not found');
       }

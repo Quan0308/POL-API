@@ -59,9 +59,16 @@ export class UsersService {
 
   async getUserFriends(id: number) {
     try {
-      const user = await this.getUserById(id, ['friendIds']);
-      return user.friends;
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .select(['user.id'])
+        .leftJoin('user.friends', 'friends')
+        .addSelect(['friends.id', 'friends.username', 'friends.avatar'])
+        .where('user.id = :id', { id })
+        .getMany();
+      return user;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }
@@ -70,7 +77,10 @@ export class UsersService {
     try {
       const user = await this.getUserById(userId);
       const friend = await this.getUserById(friendId);
-      user.friendIds.push(friend.id);
+      if (!user.friends) {
+        user.friends = [];
+      }
+      user.friends.push(friend);
       return await this.userRepository.save({
         ...user,
         updatedAt: new Date(),
