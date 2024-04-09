@@ -75,16 +75,35 @@ export class UsersService {
 
   async addFriend(userId: number, friendId: number) {
     try {
-      const user = await this.getUserById(userId);
-      const friend = await this.getUserById(friendId);
+      let newFriend = await this.getUserById(friendId);
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.friends', 'friends')
+        .where('user.id = :id', { id: userId })
+        .getOne();
       if (!user.friends) {
         user.friends = [];
       }
-      user.friends.push(friend);
-      return await this.userRepository.save({
+      user.friends.push(newFriend);
+      await this.userRepository.save({
         ...user,
         updatedAt: new Date(),
       });
+      newFriend = user;
+      const friend = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.friends', 'friends')
+        .where('user.id = :id', { id: friendId })
+        .getOne();
+      if (!friend.friends) {
+        friend.friends = [];
+      }
+      friend.friends.push(user);      
+      await this.userRepository.save({
+        ...friend,
+        updatedAt: new Date(),
+      });
+      return;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -113,7 +132,7 @@ export class UsersService {
         ...friend,
         updatedAt: new Date(),
       });
-      return null;
+      return true;
     } catch (error) {
       throw new InternalServerErrorException();
     }

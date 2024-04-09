@@ -95,7 +95,6 @@ export class FriendRequestService {
         throw new NotFoundException('Friend request not found');
       }
       this.usersService.addFriend(sender, receiver);
-      this.usersService.addFriend(receiver, sender);
       return await this.deleteFriendRequest(sender, receiver);
     } catch (error) {
       throw new InternalServerErrorException();
