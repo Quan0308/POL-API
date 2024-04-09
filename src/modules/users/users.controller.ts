@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   UseInterceptors,
   UploadedFile,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
@@ -29,6 +30,7 @@ export class UsersController {
   @Post()
   @ResponseMessage(USER_MESSAGE.USER_CREATED)
   create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
+    console.log(createUserDto);
     return this.usersService.create(createUserDto);
   }
 
@@ -75,5 +77,11 @@ export class UsersController {
     @Body(ValidationPipe) updatePasswordDto: UpdateUserPasswordDto
   ) {
     return await this.usersService.updatePassword(userId, updatePasswordDto);
+  }
+
+  @Delete(':userId/friend')
+  @ResponseMessage(USER_MESSAGE.USER_FRIEND_DELETED)
+  async deleteFriend(@Param('userId', ParseIntPipe) userId: number, @Body('friendId', ParseIntPipe) friendId: number) {
+    return await this.usersService.deleteFriend(userId, friendId);
   }
 }

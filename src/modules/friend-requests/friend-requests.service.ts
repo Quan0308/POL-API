@@ -19,6 +19,9 @@ export class FriendRequestService {
       if (!senderUser || !receiverUser) {
         throw new NotFoundException('User not found');
       }
+      if (!senderUser.friends) {
+        senderUser.friends = [];
+      }
       const isFriend = senderUser.friends.some((friend) => friend.id === receiverId);
       if (isFriend) {
         throw new NotFoundException('You are already friends');
@@ -30,6 +33,7 @@ export class FriendRequestService {
       });
       return await this.friendRequestRepository.save(friendRequest);
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }

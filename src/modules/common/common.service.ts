@@ -35,9 +35,6 @@ export class CommonService {
       blobStream.on('error', (error) => {
         reject(`Unable to upload image, something went wrong: ${error}`);
       });
-      blobStream.on('error', (error) => {
-        reject(`Unable to upload image, something went wrong: ${error}`);
-      });
 
       blobStream.end(file.buffer);
     });

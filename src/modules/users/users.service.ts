@@ -93,12 +93,27 @@ export class UsersService {
 
   async deleteFriend(userId: number, friendId: number) {
     try {
-      const user = await this.getUserById(userId);
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.friends', 'friends')
+        .where('user.id = :id', { id: userId })
+        .getOne();
       user.friends = user.friends.filter((friend) => friend.id !== friendId);
-      return await this.userRepository.save({
+      await this.userRepository.save({
         ...user,
         updatedAt: new Date(),
       });
+      const friend = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.friends', 'friends')
+        .where('user.id = :id', { id: friendId })
+        .getOne();
+      friend.friends = friend.friends.filter((f) => f.id !== userId);
+      await this.userRepository.save({
+        ...friend,
+        updatedAt: new Date(),
+      });
+      return null;
     } catch (error) {
       throw new InternalServerErrorException();
     }

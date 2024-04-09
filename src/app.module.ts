@@ -18,7 +18,6 @@ import { BaseException } from 'src/ultils/exception/base.exception.filter';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync(TypeOrmConfigAsync),
     UsersModule,
     PostModule,
