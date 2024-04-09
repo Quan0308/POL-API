@@ -70,7 +70,6 @@ export class UsersService {
     try {
       const user = await this.getUserById(userId);
       const friend = await this.getUserById(friendId);
-      console.log(user, friend);
       user.friendIds.push(friend.id);
       return await this.userRepository.save({
         ...user,

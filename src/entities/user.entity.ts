@@ -24,10 +24,10 @@ export class User extends BaseEntity {
 
   @Column()
   createdAt: Date;
-  @Column()
+
   @Column()
   updatedAt: Date;
-  @Column()
+
   @Column({ default: 'System' })
   createdBy: string;
 
@@ -57,11 +57,9 @@ export class User extends BaseEntity {
   @OneToMany((type) => Group, (group) => group.members)
   memberOf: Group[];
 
-  @ManyToMany((type) => FriendRequest, (friendRequest) => friendRequest.sender)
-  @JoinTable()
+  @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.sender)
   sentFriendRequests: FriendRequest[];
 
-  @ManyToMany((type) => FriendRequest, (friendRequest) => friendRequest.receiver)
-  @JoinTable()
+  @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.receiver)
   receivedFriendRequests: FriendRequest[];
 }

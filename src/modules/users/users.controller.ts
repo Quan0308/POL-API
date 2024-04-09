@@ -48,6 +48,11 @@ export class UsersController {
     return await this.groupService.getGroupsOfUser(userId);
   }
 
+  @Get(':userId/friends')
+  async getFriendsOfUser(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.usersService.getUserFriends(userId);
+  }
+
   @Put(':userId/username')
   @ResponseMessage(USER_MESSAGE.USER_UPDATED)
   async updateUsername(

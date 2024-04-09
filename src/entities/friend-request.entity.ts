@@ -1,15 +1,19 @@
-import { Entity, PrimaryColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity('friend_request')
 export class FriendRequest {
   @PrimaryColumn()
-  @ManyToMany((type) => User, (user) => user.sentFriendRequests)
-  sender: number;
+  senderId: number;
+  
+  @ManyToOne((type) => User, (user) => user.sentFriendRequests)
+  sender: User;
 
   @PrimaryColumn()
-  @ManyToMany((type) => User, (user) => user.receivedFriendRequests)
-  receiver: number;
+  receiverId: number;
+
+  @ManyToOne((type) => User, (user) => user.receivedFriendRequests)
+  receiver: User;
 
   @Column()
   createdAt: Date;

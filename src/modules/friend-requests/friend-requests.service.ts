@@ -12,16 +12,16 @@ export class FriendRequestService {
     private usersService: UsersService
   ) {}
 
-  async createFriendRequest(sender: number, receiver: number) {
+  async createFriendRequest(senderId: number, receiverId: number) {
     try {
-      const senderUser = await this.usersService.getUserById(sender);
-      const receiverUser = await this.usersService.getUserById(receiver);
+      const senderUser = await this.usersService.getUserById(senderId);
+      const receiverUser = await this.usersService.getUserById(receiverId);
       if (!senderUser || !receiverUser) {
         throw new NotFoundException('User not found');
       }
       const friendRequest = this.friendRequestRepository.create({
-        sender,
-        receiver,
+        senderId,
+        receiverId,
         createdAt: new Date(),
       });
       return await this.friendRequestRepository.save(friendRequest);
@@ -34,18 +34,12 @@ export class FriendRequestService {
     try {
       const requests = await this.friendRequestRepository
         .createQueryBuilder('friend_request')
-        .where('friend_request.receiver = :userId', { userId })
+        .select(['friend_request.createdAt'])
+        .leftJoin('friend_request.sender', 'sender')
+        .addSelect(['sender.id', 'sender.username', 'sender.avatar'])
+        .where('friend_request.receiverId = :receiverId', { receiverId: userId })
         .getMany();
-      const fields = ['user.id', 'user.username', 'user.avatar'];
-      return this.usersService.getUsersByIds(
-        requests.map((request) => request.sender),
-        fields
-      );
-      // return await this.friendRequestRepository
-      //   .createQueryBuilder('friend_request')
-      //   .leftJoinAndSelect('friend_request.sender', 'sender')
-      //   .where('friend_request.receiver = :userId', { userId })
-      //   .getMany();
+      return requests;
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -54,14 +48,13 @@ export class FriendRequestService {
   async getFriendRequestsOfSender(userId: number) {
     try {
       const requests = await this.friendRequestRepository
-        .createQueryBuilder('friend_request')
-        .where('friend_request.sender = :userId', { userId })
-        .getMany();
-      const fields = ['user.id', 'user.username', 'user.avatar'];
-      return this.usersService.getUsersByIds(
-        requests.map((request) => request.receiver),
-        fields
-      );
+      .createQueryBuilder('friend_request')
+      .select(['friend_request.createdAt'])
+      .leftJoin('friend_request.receiver', 'receiver')
+      .addSelect(['receiver.id', 'receiver.username', 'receiver.avatar'])
+      .where('friend_request.senderId = :senderId', { senderId: userId })
+      .getMany();
+      return requests;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -70,12 +63,13 @@ export class FriendRequestService {
 
   async deleteFriendRequest(sender: number, receiver: number) {
     try {
-      return await this.friendRequestRepository
-        .createQueryBuilder('friend_request')
-        .delete()
-        .where('friend_request.sender = :sender', { sender })
-        .andWhere('friend_request.receiver = :receiver', { receiver })
-        .execute();
+      const request = await this.friendRequestRepository.findOne({
+        where: {
+          senderId: sender,
+          receiverId: receiver,
+        }
+      })
+      return await this.friendRequestRepository.remove(request)
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -83,11 +77,12 @@ export class FriendRequestService {
 
   async acceptFriendRequest(sender: number, receiver: number) {
     try {
-      const request = await this.friendRequestRepository
-        .createQueryBuilder('friend_request')
-        .where('friend_request.sender = :sender', { sender })
-        .andWhere('friend_request.receiver = :receiver', { receiver })
-        .getOne();
+      const request = await this.friendRequestRepository.findOne({
+        where: {
+          senderId: sender,
+          receiverId: receiver,
+        }
+      })
       if (!request) {
         throw new NotFoundException('Friend request not found');
       }
