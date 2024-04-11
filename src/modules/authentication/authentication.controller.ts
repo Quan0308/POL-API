@@ -12,6 +12,28 @@ export class AuthenticationController {
     return this.authenticationService.signUp(email);
   }
 
+  @Post('reset-password')
+  resetPassword(@Body('email') email: string) {
+    return this.authenticationService.resetPassword(email);
+  }
+
+  @Post('update-password')
+  updatePassword(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    return this.authenticationService.updatePassword(email, password);
+  }
+
+  @Post('signin')
+  signIn(
+    @Body('email') email: string,
+    @Body('username') username: string,
+    @Body('password') password: string,
+  ) {
+    return this.authenticationService.signIn(email, username, password);
+  }
+
   @Get('otps')
   getAllOtps() {
     return this.authenticationService.getAllOtps();

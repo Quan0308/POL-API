@@ -63,17 +63,7 @@ export class AuthenticationService {
     }
   }
 
-  async signUp(email: string) {
-    const existingOtp = await this.otpRepository.findOne({ where: { email } });
-
-    if (existingOtp) {
-      if (existingOtp.validUntil > new Date()) {
-        throw new NotFoundException('OTP already sent');
-      }
-
-      await this.otpRepository.remove(existingOtp);
-    }
-
+  private async handleOtpProcess(email: string) {
     const otp = Math.floor(Math.random() * 1000000)
       .toString()
       .padStart(6, '0');
@@ -86,6 +76,66 @@ export class AuthenticationService {
     };
   }
 
+  async signUp(email: string) {
+    const existingOtp = await this.otpRepository.findOne({ where: { email } });
+
+    if (existingOtp && existingOtp.validUntil > new Date()) {
+      throw new NotFoundException('OTP already sent');
+    }
+
+    if (existingOtp) {
+      await this.otpRepository.remove(existingOtp);
+    }
+
+    return this.handleOtpProcess(email);
+  }
+
+  async signIn(email: string, username: string, password: string) {
+    let user = null;
+    if (password === '') {
+      user = await this.userRepository.findOne({ where: { email } });
+    } else {
+      user = await this.userRepository.findOne({
+        where: { username, password },
+      });
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  async resetPassword(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.handleOtpProcess(email);
+  }
+
+  async updatePassword(email: string, password: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.password = password;
+
+    try {
+      await this.userRepository.save(user);
+    } catch (error) {
+      console.error('Error saving user:', error);
+      throw new InternalServerErrorException('Error saving user');
+    }
+
+    return user;
+  }
+
   async getAllOtps() {
     return this.otpRepository.find();
   }
@@ -93,6 +143,7 @@ export class AuthenticationService {
   async verifyOtp(email: string, otp: string) {
     const otpRecord = await this.otpRepository.findOne({
       where: { email, otp },
+      order: { validUntil: 'DESC' },
     });
 
     if (!otpRecord || otpRecord.validUntil < new Date()) {
