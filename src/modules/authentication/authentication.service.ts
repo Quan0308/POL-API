@@ -7,12 +7,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as nodemailer from 'nodemailer';
 import { OTP } from 'src/entities/otp.entity';
+import { User } from 'src/entities/user.entity';
+import { CreateUserDto } from 'src/dto';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     @InjectRepository(OTP)
     private otpRepository: Repository<OTP>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   private async sendOtpEmail(email: string, otp: string) {
@@ -37,7 +41,6 @@ export class AuthenticationService {
     try {
       await transporter.sendMail(mailOptions);
     } catch (error) {
-      console.error('Error sending email:', error);
       throw new InternalServerErrorException('Error sending email');
     }
   }
@@ -99,5 +102,18 @@ export class AuthenticationService {
     await this.otpRepository.remove(otpRecord);
 
     return true;
+  }
+
+  async createUser(createUserDto: CreateUserDto) {
+    const user = this.userRepository.create(createUserDto);
+
+    try {
+      await this.userRepository.save(user);
+    } catch (error) {
+      console.error('Error saving user:', error);
+      throw new InternalServerErrorException('Error saving user');
+    }
+
+    return user;
   }
 }

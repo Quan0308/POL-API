@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dto';
 import { User } from 'src/entities/user.entity';
@@ -15,33 +19,32 @@ export class UsersService {
       const user = this.userRepository.create(createUserDto);
       return await this.userRepository.save(user);
     } catch (error) {
-       throw InternalServerErrorException;
+      throw error;
     }
   }
 
   async getUserById(id: number) {
     const user = await this.userRepository
-          .createQueryBuilder('user')
-          .where('user.id = :id', { id })
-          .getOne();
-    
-    if(!user) {
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
   }
 
   async getUsersByIds(ids: number[], fields: string[]) {
-    try 
-    {
+    try {
       return await this.userRepository
-            .createQueryBuilder('user')
-            .where('user.id IN (:...ids)', { ids })
-            .select(fields)
-            .getMany();
+        .createQueryBuilder('user')
+        .where('user.id IN (:...ids)', { ids })
+        .select(fields)
+        .getMany();
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException;
+      throw new InternalServerErrorException();
     }
   }
 }

@@ -1,21 +1,21 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Param, 
-  ParseIntPipe, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
   ValidationPipe,
-  UseInterceptors 
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
 import { GroupsService } from '../groups/groups.service';
 import { CreateUserDto } from 'src/dto';
-import { 
-  ResponseMessage, 
-  TransformationInterceptor, 
-  USER_MESSAGE 
+import {
+  ResponseMessage,
+  TransformationInterceptor,
+  USER_MESSAGE,
 } from 'src/ultils/response';
 
 @UseInterceptors(TransformationInterceptor)
@@ -24,7 +24,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly postService: PostService,
-    private readonly groupService: GroupsService
+    private readonly groupService: GroupsService,
   ) {}
 
   @Post()

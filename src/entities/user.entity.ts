@@ -4,6 +4,8 @@ import {
   Column,
   BaseEntity,
   OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
@@ -14,6 +16,9 @@ import { Group } from './group.entity';
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  firebaseUID: string;
 
   @Column()
   username: string;
@@ -27,10 +32,10 @@ export class User extends BaseEntity {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @Column({ default: 'System' })
