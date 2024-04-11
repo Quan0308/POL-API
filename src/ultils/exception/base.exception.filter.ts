@@ -1,10 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch()
@@ -18,19 +12,10 @@ export class BaseException implements ExceptionFilter {
 
     const ctx = host.switchToHttp();
 
-    const httpStatus =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const response =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal server error';
-    const message =
-      typeof response === 'object' && response !== null
-        ? response['message']
-        : response;
+    const response = exception instanceof HttpException ? exception.getResponse() : 'Internal server error';
+    const message = typeof response === 'object' && response !== null ? response['message'] : response;
 
     const responseBody = {
       success: false,

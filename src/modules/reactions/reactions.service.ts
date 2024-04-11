@@ -7,7 +7,7 @@ import { CreateReactionDto } from 'src/dto';
 export class ReactionsService {
   constructor(
     @InjectRepository(Reaction)
-    private reactionRepository: Repository<Reaction>,
+    private reactionRepository: Repository<Reaction>
   ) {}
 
   async create(reaction: CreateReactionDto) {

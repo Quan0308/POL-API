@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CommonService } from '../common/common.service';
 import { Repository } from 'typeorm';
 import { Post } from 'src/entities/post.entity';
@@ -14,7 +10,7 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
-    private readonly commonService: CommonService,
+    private readonly commonService: CommonService
   ) {}
 
   async getViewablePosts(userId: number): Promise<LoadPost[]> {
@@ -29,16 +25,9 @@ export class PostService {
         .loadRelationCountAndMap('post.countComments', 'post.comments')
         .leftJoin('post.reactions', 'reactions')
         .leftJoin('reactions.author', 'reactionAuthor')
-        .addSelect([
-          'reactions.type',
-          'reactionAuthor.avatar',
-          'reactionAuthor.username',
-        ])
+        .addSelect(['reactions.type', 'reactionAuthor.avatar', 'reactionAuthor.username'])
         .orderBy('reactions.createdAt', 'DESC')
-        .where(
-          ':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0',
-          { id: userId },
-        )
+        .where(':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { id: userId })
         .getMany();
 
       return posts.map((p) => {
@@ -51,10 +40,7 @@ export class PostService {
   }
 
   async getPostById(postId: number) {
-    const post = await this.postRepository
-      .createQueryBuilder('post')
-      .where('post.id = :postId', { postId })
-      .getOne();
+    const post = await this.postRepository.createQueryBuilder('post').where('post.id = :postId', { postId }).getOne();
 
     if (!post) {
       throw new NotFoundException(`Post with id ${postId} not found`);

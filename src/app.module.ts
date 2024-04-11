@@ -7,6 +7,7 @@ import {
   CommentsModule,
   ReactionsModule,
   GroupsModule,
+  FriendRequestModule,
 } from 'src/modules';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigAsync } from 'src/config/typeorm.config';
@@ -23,6 +24,7 @@ import { BaseException } from 'src/ultils/exception/base.exception.filter';
     CommentsModule,
     ReactionsModule,
     GroupsModule,
+    FriendRequestModule,
   ],
   controllers: [AppController],
   providers: [

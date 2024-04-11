@@ -1,21 +1,16 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BaseEntity,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
 import { Group } from './group.entity';
+import { FriendRequest } from './friend-request.entity';
 
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
 
   @Column()
@@ -36,6 +31,14 @@ export class User extends BaseEntity {
   @Column({ default: 'System' })
   createdBy: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
+  @ManyToMany((type) => User)
+  @JoinTable()
+  friends: User[];
+
+  // Other relationships
   @OneToMany((type) => Post, (post) => post.author)
   posts: Post[];
 
@@ -45,12 +48,15 @@ export class User extends BaseEntity {
   @OneToMany((type) => Reaction, (reaction) => reaction.author)
   reactions: Reaction[];
 
-  @Column({ nullable: true })
-  avatar: string;
-
   @OneToMany((type) => Group, (group) => group.owner)
   groups: Group[];
 
   @OneToMany((type) => Group, (group) => group.members)
   memberOf: Group[];
+
+  @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.sender)
+  sentFriendRequests: FriendRequest[];
+
+  @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.receiver)
+  receivedFriendRequests: FriendRequest[];
 }

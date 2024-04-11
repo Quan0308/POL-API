@@ -12,7 +12,7 @@ export class CommentsService {
     private commentRepository: Repository<Comment>,
 
     @Inject(forwardRef(() => PostService))
-    private readonly postsService: PostService,
+    private readonly postsService: PostService
   ) {}
 
   async create(createCommentDto: CreateCommentDto) {

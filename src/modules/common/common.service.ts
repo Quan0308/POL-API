@@ -28,7 +28,7 @@ export class CommonService {
             })
             .then((url) => {
               return url[0];
-            }),
+            })
         );
       });
 

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGroupDto } from 'src/dto/group/create-group.dto';
 import { Group } from 'src/entities/group.entity';
@@ -15,7 +11,7 @@ export class GroupsService {
   constructor(
     @InjectRepository(Group)
     private groupsRepository: Repository<Group>,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {}
 
   async create(group: CreateGroupDto): Promise<Group> {

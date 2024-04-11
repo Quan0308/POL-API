@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Patch,
   Put,
   Body,
   Param,
@@ -10,17 +9,14 @@ import {
   ValidationPipe,
   UseInterceptors,
   UploadedFile,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
 import { GroupsService } from '../groups/groups.service';
 import { CreateUserDto, UpdateUserUsernameDto, UpdateUserPasswordDto } from 'src/dto';
-import {
-  ResponseMessage,
-  TransformationInterceptor,
-  USER_MESSAGE,
-} from 'src/ultils/response';
+import { ResponseMessage, TransformationInterceptor, USER_MESSAGE } from 'src/ultils/response';
 
 @UseInterceptors(TransformationInterceptor)
 @Controller('users')
@@ -28,7 +24,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly postService: PostService,
-    private readonly groupService: GroupsService,
+    private readonly groupService: GroupsService
   ) {}
 
   @Post()
@@ -53,11 +49,16 @@ export class UsersController {
     return await this.groupService.getGroupsOfUser(userId);
   }
 
+  @Get(':userId/friends')
+  async getFriendsOfUser(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.usersService.getUserFriends(userId);
+  }
+
   @Put(':userId/username')
   @ResponseMessage(USER_MESSAGE.USER_UPDATED)
   async updateUsername(
     @Param('userId', ParseIntPipe) userId: number,
-    @Body(ValidationPipe) updateUserUsernameDto: UpdateUserUsernameDto,
+    @Body(ValidationPipe) updateUserUsernameDto: UpdateUserUsernameDto
   ) {
     return await this.usersService.updateUsername(userId, updateUserUsernameDto);
   }
@@ -65,10 +66,7 @@ export class UsersController {
   @Put(':userId/avatar')
   @ResponseMessage(USER_MESSAGE.USER_UPDATED)
   @UseInterceptors(FileInterceptor('file'))
-  async updateAvatar(
-    @UploadedFile() file: File,
-    @Param('userId', ParseIntPipe) userId: number,
-  ) {
+  async updateAvatar(@UploadedFile() file: File, @Param('userId', ParseIntPipe) userId: number) {
     return await this.usersService.updateAvatar(userId, file);
   }
 
@@ -76,8 +74,14 @@ export class UsersController {
   @ResponseMessage(USER_MESSAGE.USER_UPDATED)
   async updatePassword(
     @Param('userId', ParseIntPipe) userId: number,
-    @Body(ValidationPipe) updatePasswordDto: UpdateUserPasswordDto,
+    @Body(ValidationPipe) updatePasswordDto: UpdateUserPasswordDto
   ) {
     return await this.usersService.updatePassword(userId, updatePasswordDto);
+  }
+
+  @Delete(':userId/friend')
+  @ResponseMessage(USER_MESSAGE.USER_FRIEND_DELETED)
+  async deleteFriend(@Param('userId', ParseIntPipe) userId: number, @Body('friendId', ParseIntPipe) friendId: number) {
+    return await this.usersService.deleteFriend(userId, friendId);
   }
 }

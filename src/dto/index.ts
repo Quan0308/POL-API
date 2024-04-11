@@ -9,3 +9,6 @@ export * from './post/create-post.dto';
 export * from './post/load-post.dto';
 
 export * from './comment/create-comment.dto';
+
+export * from './friend-request/create-friend-request.dto';
+export * from './friend-request/delete-friend-request.dto';
