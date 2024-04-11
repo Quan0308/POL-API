@@ -21,6 +21,9 @@ export class User extends BaseEntity {
   id: number;
 
   @Column()
+  firebaseUID: string;
+
+  @Column()
   username: string;
 
   @Column()
@@ -31,36 +34,19 @@ export class User extends BaseEntity {
 
   @Column({ default: true })
   isActive: boolean;
-  @Column({ default: true })
-  isActive: boolean;
 
-  @Column()
-  createdAt: Date;
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
-  updatedAt: Date;
   @UpdateDateColumn()
   updatedAt: Date;
 
   @Column({ default: 'System' })
   createdBy: string;
 
-  @OneToMany((type) => Post, (post) => post.author)
-  posts: Post[];
-
-  @OneToMany((type) => Comment, (comment) => comment.author)
-  comments: Comment[];
-
-  @OneToMany((type) => Reaction, (reaction) => reaction.author)
-  reactions: Reaction[];
-
   @Column({ nullable: true })
   avatar: string;
 
-  @OneToMany((type) => Group, (group) => group.owner)
-  groups: Group[];
   @ManyToMany((type) => User)
   @JoinTable()
   friends: User[];
@@ -78,8 +64,6 @@ export class User extends BaseEntity {
   @OneToMany((type) => Group, (group) => group.owner)
   groups: Group[];
 
-  @OneToMany((type) => Group, (group) => group.members)
-  memberOf: Group[];
   @OneToMany((type) => Group, (group) => group.members)
   memberOf: Group[];
 

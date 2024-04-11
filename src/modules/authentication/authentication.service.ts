@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as nodemailer from 'nodemailer';
@@ -16,7 +12,7 @@ export class AuthenticationService {
     @InjectRepository(OTP)
     private otpRepository: Repository<OTP>,
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: Repository<User>
   ) {}
 
   private async sendOtpEmail(email: string, otp: string) {
@@ -64,30 +60,40 @@ export class AuthenticationService {
   }
 
   private async handleOtpProcess(email: string) {
-    const otp = Math.floor(Math.random() * 1000000)
-      .toString()
-      .padStart(6, '0');
+    try {
+      const otp = Math.floor(Math.random() * 1000000)
+        .toString()
+        .padStart(6, '0');
 
-    await this.sendOtpEmail(email, otp);
-    await this.createOtpRecord(email, otp);
+      await this.sendOtpEmail(email, otp);
+      await this.createOtpRecord(email, otp);
 
-    return {
-      message: 'OTP sent successfully',
-    };
+      return {
+        message: 'OTP sent successfully',
+      };
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      throw new InternalServerErrorException('Error sending OTP');
+    }
   }
 
   async signUp(email: string) {
-    const existingOtp = await this.otpRepository.findOne({ where: { email } });
+    try {
+      const existingOtp = await this.otpRepository.findOne({ where: { email } });
 
-    if (existingOtp && existingOtp.validUntil > new Date()) {
-      throw new NotFoundException('OTP already sent');
+      if (existingOtp && existingOtp.validUntil > new Date()) {
+        throw new NotFoundException('OTP already sent');
+      }
+
+      if (existingOtp) {
+        await this.otpRepository.remove(existingOtp);
+      }
+
+      return this.handleOtpProcess(email);
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      throw new InternalServerErrorException('Error sending OTP');
     }
-
-    if (existingOtp) {
-      await this.otpRepository.remove(existingOtp);
-    }
-
-    return this.handleOtpProcess(email);
   }
 
   async signIn(email: string, username: string, password: string) {

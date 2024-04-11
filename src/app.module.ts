@@ -24,6 +24,7 @@ import { BaseException } from 'src/ultils/exception/base.exception.filter';
     PostModule,
     CommentsModule,
     ReactionsModule,
+    AuthenticationModule,
     GroupsModule,
   ],
   controllers: [AppController],

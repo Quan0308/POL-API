@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Param,
   ParseIntPipe,
@@ -10,10 +11,11 @@ import {
   UploadedFile,
   Delete,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
 import { GroupsService } from '../groups/groups.service';
-import { CreateUserDto } from 'src/dto';
+import { CreateUserDto, UpdateUserUsernameDto, UpdateUserPasswordDto } from 'src/dto';
 import { ResponseMessage, TransformationInterceptor, USER_MESSAGE } from 'src/ultils/response';
 
 @UseInterceptors(TransformationInterceptor)
