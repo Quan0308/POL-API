@@ -5,13 +5,10 @@ import { CreateReactionDto } from 'src/dto';
 @Controller('reactions')
 @UseInterceptors(TransformationInterceptor)
 export class ReactionsController {
-    constructor(
-        private readonly reactionsService: ReactionsService
-    ) {}
+  constructor(private readonly reactionsService: ReactionsService) {}
 
-    @Post()
-    create(@Body(ValidationPipe) createReaction: CreateReactionDto) {
-        return this.reactionsService.create(createReaction)
-    }
-
+  @Post()
+  create(@Body(ValidationPipe) createReaction: CreateReactionDto) {
+    return this.reactionsService.create(createReaction);
+  }
 }

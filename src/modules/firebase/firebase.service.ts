@@ -23,4 +23,9 @@ export class FirebaseService {
   getStorageInstance(): admin.storage.Storage {
     return this.storage;
   }
+
+  deleteFileFromURL(imageURL: string) {
+    const fileName = imageURL.split('/').pop().split('?')[0];
+    return this.storage.bucket().file(fileName).delete();
+  }
 }

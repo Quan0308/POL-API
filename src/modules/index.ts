@@ -4,3 +4,5 @@ export * from './comments/comments.module';
 export * from './reactions/reactions.module';
 export * from './groups/groups.module';
 export * from './authentication/authentication.module';
+
+export * from './friend-requests/friend-requests.module';

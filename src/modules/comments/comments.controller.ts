@@ -7,7 +7,6 @@ import { TransformationInterceptor } from 'src/ultils/response';
 @UseInterceptors(TransformationInterceptor)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
-
   @Post()
   create(@Body(ValidationPipe) createCommentDto: CreateCommentDto) {
     return this.commentsService.create(createCommentDto);
