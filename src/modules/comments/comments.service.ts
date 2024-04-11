@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentDto } from 'src/dto';
 import { Comment } from 'src/entities/comment.entity';
@@ -29,12 +29,13 @@ export class CommentsService {
   async getCommentsByPostId(postId: number) {
     const post = await this.postsService.getPostById(postId);
 
-    const comments = await this.commentRepository
+    return await this.commentRepository
       .createQueryBuilder('comment')
+      .select(['comment.content', 'comment.createdAt'])
+      .leftJoin('comment.author', 'author')
+      .addSelect(['author.avatar', 'author.username'])
       .where('comment.postId = :postId', { postId: post.id })
       .orderBy('comment.createdAt', 'DESC')
       .getMany();
-
-    return comments;
   }
 }
