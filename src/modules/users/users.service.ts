@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from '../common/common.service';
-import { CreateUserDto, UpdateUserDto } from 'src/dto';
+import { CreateUserDto, UpdateUserUsernameDto } from 'src/dto';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserPasswordDto } from 'src/dto/user/update-password.dto';
@@ -22,7 +22,6 @@ export class UsersService {
         updatedAt: new Date(),
       });
     } catch (error) {
-      console.log(error);
       throw InternalServerErrorException;
     }
   }
@@ -98,7 +97,7 @@ export class UsersService {
       if (!friend.friends) {
         friend.friends = [];
       }
-      friend.friends.push(user);      
+      friend.friends.push(user);
       await this.userRepository.save({
         ...friend,
         updatedAt: new Date(),
@@ -138,13 +137,13 @@ export class UsersService {
     }
   }
 
-  async updateUsername(id: number, updateUserDto: UpdateUserDto) {
+  async updateUsername(id: number, updateUserUsernameDto: UpdateUserUsernameDto) {
     try {
       const user = await this.userRepository.createQueryBuilder('user').where('user.id = :id', { id }).getOne();
       if (!user) {
         throw new NotFoundException(`User with id ${id} not found`);
       }
-      const updatedUser = this.userRepository.create(updateUserDto);
+      const updatedUser = this.userRepository.create(updateUserUsernameDto);
       await this.userRepository.update(id, {
         ...updatedUser,
         updatedAt: new Date(),
