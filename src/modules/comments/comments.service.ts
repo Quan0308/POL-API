@@ -21,7 +21,6 @@ export class CommentsService {
       authorId,
       postId,
       content,
-      createdAt: new Date(),
     });
     return await this.commentRepository.save(newComment);
   }

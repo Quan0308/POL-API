@@ -14,12 +14,21 @@ export class ReactionsService {
     try {
       const newReaction = this.reactionRepository.create({
         ...reaction,
-        createdAt: new Date(),
       });
       return await this.reactionRepository.save(newReaction);
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
     }
+  }
+  async getReactionsByPostId(postId: number) {
+    return this.reactionRepository
+      .createQueryBuilder('reaction')
+      .select(['reaction.type', 'reaction.createdAt'])
+      .leftJoin('reaction.author', 'author')
+      .addSelect(['author.avatar', 'author.username', 'author.id'])
+      .where('reaction.postId = :postId', { postId })
+      .orderBy('reaction.createdAt', 'DESC')
+      .getMany();
   }
 }
