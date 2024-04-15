@@ -53,8 +53,7 @@ export class PostService {
   async create(file, content: CreatePostDto) {
     try {
       const { authorId, caption, visibleToIds } = content;
-      // const imageUrl = await this.commonService.uploadImage(file);
-      const imageUrl = 'https://www.google.com';
+      const imageUrl = await this.commonService.uploadImage(file);
       const newPost = this.postRepository.create({
         authorId,
         caption,
