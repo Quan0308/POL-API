@@ -26,7 +26,7 @@ export class PostService {
         .leftJoin('post.reactions', 'reactions')
         .leftJoin('reactions.author', 'reactionAuthor')
         .addSelect(['reactions.type', 'reactionAuthor.avatar', 'reactionAuthor.username'])
-        .orderBy('reactions.createdAt', 'DESC')
+        .addOrderBy('reactions.createdAt', 'DESC')
         .where(':id = ANY(post.visibleToIds) OR array_length(post.visibleToIds, 1) = 0', { id: userId })
         .getMany();
 
@@ -57,7 +57,6 @@ export class PostService {
         caption,
         visibleToIds: visibleToIds.concat(authorId).sort(),
         imageUrl,
-        createdAt: new Date(),
       });
       return await this.postRepository.save(newPost);
     } catch (error) {

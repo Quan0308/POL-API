@@ -8,5 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([Reaction])],
   controllers: [ReactionsController],
   providers: [ReactionsService],
+  exports: [ReactionsService],
 })
 export class ReactionsModule {}

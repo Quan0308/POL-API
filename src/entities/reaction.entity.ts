@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, Column, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Entity, Column, ManyToOne, PrimaryColumn, CreateDateColumn } from "typeorm";
 import { User } from './user.entity';
 import { Post } from './post.entity';
 
@@ -16,7 +16,11 @@ export class Reaction extends BaseEntity {
   @ManyToOne((type) => Post, (post) => post.reactions)
   post: Post;
 
-  @Column()
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    precision: null,
+  })
   createdAt: Date;
 
   @Column()
