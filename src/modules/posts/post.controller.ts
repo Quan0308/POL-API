@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Headers,
   UploadedFile,
   UseInterceptors,
   ValidationPipe,
@@ -36,7 +37,12 @@ export class PostController {
   @Post('created-posts')
   @ResponseMessage(POST_MESSAGE.POST_CREATED)
   @UseInterceptors(FileInterceptor('file'))
-  async savePost(@UploadedFile() file, @Body(ValidationPipe) content: CreatePostDto) {
+  async savePost(
+    @UploadedFile() file, 
+    @Body(ValidationPipe) content: CreatePostDto,
+    @Headers('content-type') contentType: string
+  ) {
+    console.log(contentType);
     return await this.postService.create(file, content);
   }
 }

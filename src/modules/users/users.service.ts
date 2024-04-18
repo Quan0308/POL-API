@@ -64,8 +64,8 @@ export class UsersService {
         .leftJoin('user.friends', 'friends')
         .addSelect(['friends.id', 'friends.username', 'friends.avatar'])
         .where('user.id = :id', { id })
-        .getMany();
-      return user;
+        .getOne();
+      return user.friends;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
