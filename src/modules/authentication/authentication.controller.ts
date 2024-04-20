@@ -7,7 +7,7 @@ import { TransformationInterceptor } from 'src/ultils/response';
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
-  @Post('signup')
+  @Post('sign-up')
   signUp(@Body('email') email: string) {
     return this.authenticationService.signUp(email);
   }
@@ -17,21 +17,19 @@ export class AuthenticationController {
     return this.authenticationService.resetPassword(email);
   }
 
-  @Post('update-password')
-  updatePassword(
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
-    return this.authenticationService.updatePassword(email, password);
+  @Post('change-password')
+  changePassword(@Body('email') email: string, @Body('password') password: string) {
+    return this.authenticationService.changePassword(email, password);
   }
 
-  @Post('signin')
+  @Post('sign-in')
   signIn(
+    @Body('firebaseUID') firebaseUID: string,
     @Body('email') email: string,
     @Body('username') username: string,
-    @Body('password') password: string,
+    @Body('password') password: string
   ) {
-    return this.authenticationService.signIn(email, username, password);
+    return this.authenticationService.signIn(firebaseUID, email, username, password);
   }
 
   @Get('otps')
@@ -39,7 +37,7 @@ export class AuthenticationController {
     return this.authenticationService.getAllOtps();
   }
 
-  @Post('verify-otp')
+  @Post('otp/verification')
   verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
     return this.authenticationService.verifyOtp(email, otp);
   }

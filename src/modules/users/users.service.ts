@@ -56,6 +56,17 @@ export class UsersService {
       throw InternalServerErrorException;
     }
   }
+  async getAllUsers() {
+    try {
+      return await this.userRepository.find({
+        select: ['id', 'username', 'avatar'],
+        order: { id: 'ASC' },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
 
   async getUserById(id: number, fields?: string[]) {
     try {
