@@ -39,6 +39,11 @@ export class UsersController {
     return await this.usersService.getUserById(userId);
   }
 
+  @Get(':userId/non-friends')
+  async getNonFriendsOfUser(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.usersService.getNonFriends(userId);
+  }
+
   @Get(':userId/viewable-posts')
   async getViewablePosts(@Param('userId', ParseIntPipe) userId: number) {
     return await this.postService.getViewablePosts(userId);
@@ -79,9 +84,9 @@ export class UsersController {
     return await this.usersService.updatePassword(userId, updatePasswordDto);
   }
 
-  @Delete(':userId/friend')
+  @Delete(':userId/friend/:friendId')
   @ResponseMessage(USER_MESSAGE.USER_FRIEND_DELETED)
-  async deleteFriend(@Param('userId', ParseIntPipe) userId: number, @Body('friendId', ParseIntPipe) friendId: number) {
+  async deleteFriend(@Param('userId', ParseIntPipe) userId: number, @Param('friendId', ParseIntPipe) friendId: number) {
     return await this.usersService.deleteFriend(userId, friendId);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FriendRequest } from 'src/entities/friend-request.entity';
@@ -9,6 +9,7 @@ export class FriendRequestService {
   constructor(
     @InjectRepository(FriendRequest)
     private friendRequestRepository: Repository<FriendRequest>,
+    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService
   ) {}
 
