@@ -1,4 +1,14 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
@@ -25,9 +35,6 @@ export class Post extends BaseEntity {
   @Column()
   caption: string;
 
-  @Column('int', { array: true, default: [] })
-  visibleToIds: number[];
-
   @Column()
   imageUrl: string;
 
@@ -36,4 +43,8 @@ export class Post extends BaseEntity {
 
   @OneToMany((type) => Reaction, (reaction) => reaction.post)
   reactions: Reaction[];
+
+  @ManyToMany((type) => User)
+  @JoinTable()
+  visibleTo: User[];
 }

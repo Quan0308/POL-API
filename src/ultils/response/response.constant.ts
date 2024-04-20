@@ -4,6 +4,7 @@ export const USER_MESSAGE = {
   USER_UPDATED: 'User Updated',
   USER_DELETED: 'User Deleted',
   USER_FRIEND_DELETED: 'Friend Deleted',
+  USER_FETCHED: 'User Fetched',
 };
 
 export const POST_MESSAGE = {

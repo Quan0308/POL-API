@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
@@ -34,14 +35,22 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Get()
+  @ResponseMessage(USER_MESSAGE.USER_FETCHED)
+  async getAllUsers() {
+    return await this.usersService.getAllUsers();
+  }
   @Get(':userId')
   async getUserById(@Param('userId', ParseIntPipe) userId: number) {
     return await this.usersService.getUserById(userId);
   }
 
   @Get(':userId/viewable-posts')
-  async getViewablePosts(@Param('userId', ParseIntPipe) userId: number) {
-    return await this.postService.getViewablePosts(userId);
+  async getViewablePosts(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Query('authorId', ParseIntPipe) authorId: number
+  ) {
+    return await this.postService.getViewablePosts(userId, authorId);
   }
 
   @Get(':userId/groups')
