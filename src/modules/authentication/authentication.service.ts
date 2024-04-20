@@ -5,6 +5,7 @@ import * as nodemailer from 'nodemailer';
 import { OTP } from 'src/entities/otp.entity';
 import { User } from 'src/entities/user.entity';
 import { CreateUserDto } from 'src/dto';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class AuthenticationService {
@@ -96,21 +97,41 @@ export class AuthenticationService {
     }
   }
 
-  async signIn(email: string, username: string, password: string) {
+  async signIn(firebaseUID: string, email: string, username: string, password: string) {
     let user = null;
+    let providerId = null;
+
+    // Check if password is empty
     if (password === '') {
-      user = await this.userRepository.findOne({ where: { email } });
+      user = await this.userRepository.findOne({ where: { firebaseUID } });
+
+      const firebaseUser = await admin.auth().getUser(firebaseUID);
+
+      if (firebaseUser.providerData.length > 0) {
+        providerId = firebaseUser.providerData[0].providerId;
+      }
+
+      if ((providerId === 'google.com' || providerId === 'firebase') && !user) {
+        const createUserDto = {
+          firebaseUID,
+          email,
+          password,
+          username,
+        };
+        await this.createUser(createUserDto);
+      }
     } else {
-      user = await this.userRepository.findOne({
-        where: { username, password },
-      });
+      user = await this.userRepository.findOne({ where: { username, password } });
     }
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    return user;
+    return {
+      user,
+      providerId,
+    };
   }
 
   async resetPassword(email: string) {
@@ -123,7 +144,7 @@ export class AuthenticationService {
     return this.handleOtpProcess(email);
   }
 
-  async updatePassword(email: string, password: string) {
+  async changePassword(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
@@ -167,7 +188,6 @@ export class AuthenticationService {
     try {
       await this.userRepository.save(user);
     } catch (error) {
-      console.error('Error saving user:', error);
       throw new InternalServerErrorException('Error saving user');
     }
 
