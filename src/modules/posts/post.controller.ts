@@ -12,9 +12,10 @@ import {
 import { PostService } from './post.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreatePostDto } from 'src/dto';
-import { ResponseMessage, POST_MESSAGE, TransformationInterceptor } from 'src/ultils/response';
+import { ResponseMessage, POST_MESSAGE, TransformationInterceptor, REACTION_MESSAGE } from 'src/ultils/response';
 import { CommentsService } from '../comments/comments.service';
 import { ReactionsService } from '../reactions/reactions.service';
+import { SendReactionDto } from '../../dto/post/send-reaction.dto';
 
 @UseInterceptors(TransformationInterceptor)
 @Controller('posts')
@@ -38,5 +39,10 @@ export class PostController {
   @UseInterceptors(FileInterceptor('file'))
   async savePost(@UploadedFile() file, @Body(ValidationPipe) content: CreatePostDto) {
     return await this.postService.create(file, content);
+  }
+  @Post(':postId/reactions')
+  @ResponseMessage(REACTION_MESSAGE.REACTION_CREATED)
+  async createReaction(@Param('postId', ParseIntPipe) postId: number, @Body(ValidationPipe) reaction: SendReactionDto) {
+    return await this.reactionsService.create({ ...reaction, postId });
   }
 }
