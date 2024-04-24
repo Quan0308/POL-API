@@ -25,9 +25,9 @@ export class PostService {
         .orderBy('post.createdAt', 'DESC')
         .leftJoin('post.author', 'author')
         .addSelect(['author.id', 'author.avatar', 'author.username'])
-        .leftJoin('post.comments', 'comments')
-        .loadRelationCountAndMap('post.countComments', 'post.comments')
-        .leftJoin('post.reactions', 'reactions')
+        .leftJoin('post.comments', 'comments', 'post.authorId = :userId', { userId })
+        .loadRelationCountAndMap('post.countComments', 'post.comments', 'countComments')
+        .leftJoin('post.reactions', 'reactions', 'post.authorId = :userId', { userId })
         .leftJoin('reactions.author', 'reactionAuthor')
         .addSelect(['reactions.type', 'reactionAuthor.avatar', 'reactionAuthor.username'])
         .addOrderBy('reactions.createdAt', 'DESC');

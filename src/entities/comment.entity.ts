@@ -5,8 +5,8 @@ import {
   Entity,
   ManyToOne,
   PrimaryColumn,
-  PrimaryGeneratedColumn
-} from "typeorm";
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Post } from './post.entity';
 

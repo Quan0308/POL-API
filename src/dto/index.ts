@@ -7,6 +7,8 @@ export * from './reaction/create-reaction.dto';
 
 export * from './post/create-post.dto';
 export * from './post/load-post.dto';
+export * from './post/send-reaction.dto';
+export * from './post/send-comment.dto';
 
 export * from './comment/create-comment.dto';
 
