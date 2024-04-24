@@ -27,14 +27,23 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
-    const request = await this.friendRequestService.getFriendRequestsOfSender(userId);
+    let request = await this.friendRequestService.getFriendRequestsOfSender(userId);
     const receiverIds = request.map((req) => req.receiver.id);
+    request = await this.friendRequestService.getFriendRequestsOfReceiver(userId);
+    const senderIds = request.map((req) => req.sender.id);
+    const allIds = friendIds.concat(receiverIds, senderIds);
     try {
+      if (allIds.length === 0) {
+        return await this.userRepository
+          .createQueryBuilder('user')
+          .where('user.id != :id', { id: userId })
+          .select(['user.id', 'user.username', 'user.avatar'])
+          .getMany();
+      }
       const nonFriends = await this.userRepository
         .createQueryBuilder('user')
-        .where('user.id NOT IN (:...friends)', { friends: friendIds})
+        .where('user.id NOT IN (:...friends)', { friends: allIds})
         .andWhere('user.id != :id', { id: userId })
-        .andWhere('user.id NOT IN (:...receivers)', { receivers: receiverIds })
         .select(['user.id', 'user.username', 'user.avatar'])
         .getMany();
       return nonFriends;
