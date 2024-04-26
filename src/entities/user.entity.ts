@@ -14,6 +14,7 @@ import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
 import { Group } from './group.entity';
 import { FriendRequest } from './friend-request.entity';
+import { Notification } from './notification.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -69,4 +70,7 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.receiver)
   receivedFriendRequests: FriendRequest[];
+
+  @OneToMany((type) => Notification, (notification) => notification.user)
+  notifications: Notification[];
 }
