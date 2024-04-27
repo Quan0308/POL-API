@@ -12,7 +12,6 @@ import {
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
-import { Notification } from './notification.entity';
 
 @Entity()
 export class Post extends BaseEntity {
@@ -62,7 +61,4 @@ export class Post extends BaseEntity {
   @ManyToMany((type) => User)
   @JoinTable()
   visibleTo: User[];
-
-  @OneToMany((type) => Notification, (notification) => notification.post)
-  notifications: Notification[];
 }

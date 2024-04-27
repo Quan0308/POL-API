@@ -21,6 +21,7 @@ import { PostService } from '../posts/post.service';
 import { GroupsService } from '../groups/groups.service';
 import { CreateUserDto, UpdateUserUsernameDto, UpdateUserPasswordDto } from 'src/dto';
 import { ResponseMessage, TransformationInterceptor, USER_MESSAGE } from 'src/ultils/response';
+import { NotificationService } from '../notification/notification.service';
 
 @UseInterceptors(TransformationInterceptor)
 @Controller('users')
@@ -28,13 +29,20 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly postService: PostService,
-    private readonly groupService: GroupsService
+    private readonly groupService: GroupsService,
+    private readonly notificationService: NotificationService
   ) {}
 
   @Post()
   @ResponseMessage(USER_MESSAGE.USER_CREATED)
   create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Post(':userId/fcm-token')
+  @ResponseMessage(USER_MESSAGE.USER_CREATED)
+  async saveUserToken(@Param('userId', ParseIntPipe) userId: number, @Body('token') token: string) {
+    return await this.notificationService.createFCMToken(userId, token);
   }
 
   @Get()
