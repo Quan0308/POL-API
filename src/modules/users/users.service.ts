@@ -1,18 +1,58 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from '../common/common.service';
 import { CreateUserDto, UpdateUserUsernameDto } from 'src/dto';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserPasswordDto } from 'src/dto/user/update-password.dto';
+import { FriendRequestService } from '../friend-requests/friend-requests.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @Inject(forwardRef(() => FriendRequestService))
+    private friendRequestService: FriendRequestService,
     private readonly commonService: CommonService
   ) {}
+
+  async getNonFriends(userId: number) {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.friends', 'friends')
+      .where('user.id = :id', { id: userId })
+      .getOne();
+    const friendIds = user.friends.map((friend) => friend.id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    let request = await this.friendRequestService.getFriendRequestsOfSender(userId);
+    const receiverIds = request.map((req) => req.receiver.id);
+    request = await this.friendRequestService.getFriendRequestsOfReceiver(userId);
+    const senderIds = request.map((req) => req.sender.id);
+    const allIds = friendIds.concat(receiverIds, senderIds);
+    try {
+      if (allIds.length === 0) {
+        return await this.userRepository
+          .createQueryBuilder('user')
+          .where('user.id != :id', { id: userId })
+          .select(['user.id', 'user.username', 'user.avatar'])
+          .getMany();
+      }
+      const nonFriends = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id NOT IN (:...friends)', { friends: allIds})
+        .andWhere('user.id != :id', { id: userId })
+        .select(['user.id', 'user.username', 'user.avatar'])
+        .getMany();
+      return nonFriends;
+    }
+    catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const user = this.userRepository.create(createUserDto);
@@ -75,8 +115,8 @@ export class UsersService {
         .leftJoin('user.friends', 'friends')
         .addSelect(['friends.id', 'friends.username', 'friends.avatar'])
         .where('user.id = :id', { id })
-        .getMany();
-      return user;
+        .getOne();
+      return user.friends;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
