@@ -19,7 +19,7 @@ export class PostService {
     try {
       const query = this.postRepository
         .createQueryBuilder('post')
-        .select(['post.id', 'post.caption', 'post.imageUrl', 'post.createdAt'])
+        .select(['post.id', 'post.caption', 'post.imageUrl', 'post.createdAt', 'post.frame', 'post.font'])
         .leftJoin('post.visibleTo', 'visibleTo')
         .where('visibleTo.id = :id', { id: userId })
         .orderBy('post.createdAt', 'DESC')
@@ -52,12 +52,14 @@ export class PostService {
 
   async create(file, content: CreatePostDto) {
     try {
-      const { authorId, caption, visibleToIds } = content;
+      const { authorId, caption, visibleToIds, frame, font } = content;
       const imageUrl = await this.commonService.uploadImage(file);
       const newPost = this.postRepository.create({
         authorId,
         caption,
         imageUrl,
+        frame,
+        font,
       });
       newPost.visibleTo = await this.usersService.getUsersByIds(visibleToIds.concat(authorId).sort(), ['user.id']);
       return await this.postRepository.save(newPost);
