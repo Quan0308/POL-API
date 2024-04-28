@@ -48,9 +48,6 @@ export class FriendRequestController {
   @Delete()
   @ResponseMessage(FRIEND_REQUEST_MESSAGE.FRIEND_REQUEST_DELETED)
   async deleteFriendRequest(@Query('senderId') senderId: number, @Query('receiverId') receiverId: number) {
-    return await this.friendRequestService.deleteFriendRequest(
-      senderId,
-      receiverId
-    );
+    return await this.friendRequestService.deleteFriendRequest(senderId, receiverId);
   }
 }

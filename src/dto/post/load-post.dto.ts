@@ -5,6 +5,8 @@ export class LoadPost {
   authorUsername: string;
   postId: number;
   caption: string;
+  frame: number;
+  font: number;
   imageUrl: string;
   reactions: Reaction[];
   countComments: number;

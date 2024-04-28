@@ -1,4 +1,11 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from '../common/common.service';
 import { CreateUserDto, UpdateUserUsernameDto } from 'src/dto';
@@ -42,13 +49,12 @@ export class UsersService {
       }
       const nonFriends = await this.userRepository
         .createQueryBuilder('user')
-        .where('user.id NOT IN (:...friends)', { friends: allIds})
+        .where('user.id NOT IN (:...friends)', { friends: allIds })
         .andWhere('user.id != :id', { id: userId })
         .select(['user.id', 'user.username', 'user.avatar'])
         .getMany();
       return nonFriends;
-    }
-    catch (error) {
+    } catch (error) {
       throw new InternalServerErrorException();
     }
   }

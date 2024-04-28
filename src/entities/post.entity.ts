@@ -35,6 +35,20 @@ export class Post extends BaseEntity {
   @Column()
   caption: string;
 
+  @Column({
+    type: 'int',
+    default: 0,
+    name: 'frame',
+  })
+  frame: number;
+
+  @Column({
+    type: 'int',
+    default: 0,
+    name: 'font',
+  })
+  font: number;
+
   @Column()
   imageUrl: string;
 
