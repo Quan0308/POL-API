@@ -23,14 +23,19 @@ export class CommentsService {
         content,
       });
       await this.commentRepository.save(newComment);
-      
+
       const post = await this.commentRepository.findOne({ where: { postId }, relations: ['post'] });
       const sender = await this.commentRepository.findOne({ where: { authorId }, relations: ['author'] });
       await this.notificationService.pushNotification({
         receiverId: post.post.authorId,
         content: 'Sent a comment',
         title: sender.author.username,
-        type: NotificationTypeEnum.POST,
+        type: NotificationTypeEnum.COMMENT,
+        data: {
+          avatar: sender.author.avatar,
+          emoji: 'comment',
+          type: NotificationTypeEnum.COMMENT
+        },
       });
       return null;
     } catch (error) {

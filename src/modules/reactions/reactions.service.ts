@@ -26,7 +26,12 @@ export class ReactionsService {
         receiverId: post.authorId,
         content: 'Sent a reaction',
         title: sender.author.username,
-        type: NotificationTypeEnum.POST,
+        type: NotificationTypeEnum.REACTION,
+        data: {
+          avatar: sender.author.avatar,
+          emoji: reaction.type,
+          type: NotificationTypeEnum.REACTION,
+        }
       });
       return null;
     } catch (error) {

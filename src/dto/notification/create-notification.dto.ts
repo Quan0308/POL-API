@@ -14,4 +14,6 @@ export class CreateNotificationDto {
 
   @IsNotEmpty()
   type: NotificationTypeEnum;
+
+  data: { [key: string]: string };
 }

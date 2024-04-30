@@ -20,13 +20,13 @@ export class NotificationService {
     try {
       const notificationToken = await this.notificationTokenRepository.findOne({ where: { userId } });
       if (notificationToken) {
-        return await this.notificationRepository.save({
+        return await this.notificationTokenRepository.save({
           ...notificationToken,
           token,
         });
       }
-      const newEntity = this.notificationTokenRepository.create({ userId, token });
-      return await this.notificationTokenRepository.save(newEntity);
+      await this.notificationTokenRepository.save({ userId, token });
+      return;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
@@ -35,7 +35,7 @@ export class NotificationService {
 
   async pushNotification(notification: CreateNotificationDto) {
     try {
-      const { receiverId, content, title, type } = notification;
+      const { receiverId, content, title, type, data } = notification;
       const notificationToken = await this.notificationTokenRepository.findOne({ where: { userId: receiverId } });
       // Send notification to the receiver
       if (notificationToken.token) {
@@ -46,7 +46,7 @@ export class NotificationService {
           type,
         });
         await this.notificationRepository.save(notification);
-        await this.firebaseService.pushNotification(notificationToken.token, { title, body: content });
+        await this.firebaseService.pushNotification(notificationToken.token, { title, body: content }, data);
       }
       //return await this.notificationRepository.save(notification);
     } catch (error) {
