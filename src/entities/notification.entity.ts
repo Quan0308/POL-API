@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Post } from './post.entity';
 import { NotificationTypeEnum } from '../ultils/enums/notification-type.enum';
 import { NotificationToken } from './notification-token.entity';
 
@@ -26,7 +25,7 @@ export class Notification extends BaseEntity {
   @Column({ name: 'user_id', nullable: false })
   userId: number;
 
-  @Column({ name: 'notification_token_id', type: 'varchar', nullable: false })
+  @Column({ name: 'notification_token_id', nullable: false })
   notificationTokenId: number;
 
   @Column({ name: 'data', type: 'json', nullable: true, default: null })

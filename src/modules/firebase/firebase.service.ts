@@ -34,4 +34,16 @@ export class FirebaseService {
     }
     return null;
   }
+
+  pushNotification(token: string, message: { title: string; body: string }) {
+    try {
+      return admin.messaging().send({
+        notification: message,
+        token,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new Error('Unable to send notification');
+    }
+  }
 }

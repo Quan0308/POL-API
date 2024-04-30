@@ -42,7 +42,7 @@ export class UsersController {
   @Post(':userId/fcm-token')
   @ResponseMessage(USER_MESSAGE.USER_CREATED)
   async saveUserToken(@Param('userId', ParseIntPipe) userId: number, @Body('token') token: string) {
-    return await this.notificationService.createFCMToken(userId, token);
+    return await this.notificationService.createOrUpdateFCMToken(userId, token);
   }
 
   @Get()
