@@ -47,11 +47,14 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   avatar: string;
 
+  // Other relationships
   @ManyToMany((type) => User)
   @JoinTable()
   friends: User[];
 
-  // Other relationships
+  @OneToMany((type) => Group, (group) => group.owner)
+  groups: Group[];
+
   @OneToMany((type) => Post, (post) => post.author)
   posts: Post[];
 
@@ -60,12 +63,6 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Reaction, (reaction) => reaction.author)
   reactions: Reaction[];
-
-  @OneToMany((type) => Group, (group) => group.owner)
-  groups: Group[];
-
-  @OneToMany((type) => Group, (group) => group.members)
-  memberOf: Group[];
 
   @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.sender)
   sentFriendRequests: FriendRequest[];

@@ -24,8 +24,14 @@ export class FirebaseService {
     return this.storage;
   }
 
-  deleteFileFromURL(imageURL: string) {
+  async deleteFileFromURL(imageURL: string) {
     const fileName = imageURL.split('/').pop().split('?')[0];
-    return this.storage.bucket().file(fileName).delete();
+    const file = this.storage.bucket().file(fileName);
+
+    const [exists] = await file.exists();
+    if (exists) {
+      return file.delete();
+    }
+    return null;
   }
 }
