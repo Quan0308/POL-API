@@ -34,7 +34,8 @@ export class CommentsService {
         data: {
           avatar: sender.author.avatar,
           emoji: 'comment',
-          type: NotificationTypeEnum.COMMENT
+          type: NotificationTypeEnum.COMMENT,
+          postId: post.id.toString(),
         },
       });
       return null;

@@ -81,6 +81,11 @@ export class UsersController {
     return await this.usersService.getUserFriends(userId);
   }
 
+  @Get(':userId/notifications')
+  async getNotifications(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.notificationService.getNotificationsByUserId(userId);
+  }
+
   @Put(':userId/username')
   @ResponseMessage(USER_MESSAGE.USER_UPDATED)
   async updateUsername(

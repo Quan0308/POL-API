@@ -31,6 +31,7 @@ export class ReactionsService {
           avatar: sender.author.avatar,
           emoji: reaction.type,
           type: NotificationTypeEnum.REACTION,
+          postId: post.id.toString(),
         }
       });
       return null;

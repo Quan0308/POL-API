@@ -1,10 +1,11 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Notification } from 'src/entities/notification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationToken } from 'src/entities/notification-token.entity';
 import { CreateNotificationDto } from 'src/dto/notification/create-notification.dto';
 import { FirebaseService } from '../firebase/firebase.service';
+import { INotificationData } from 'src/ultils/interfaces/notificaton-data.interface';
 
 @Injectable()
 export class NotificationService {
@@ -37,18 +38,51 @@ export class NotificationService {
     try {
       const { receiverId, content, title, type, data } = notification;
       const notificationToken = await this.notificationTokenRepository.findOne({ where: { userId: receiverId } });
+      await this.notificationRepository.save({
+        userId: receiverId,
+        notificationTokenId: notificationToken?.id,
+        content,
+        type,
+        data
+      });
       // Send notification to the receiver
-      if (notificationToken.token) {
-        const notification = this.notificationRepository.create({
-          userId: receiverId,
-          notificationTokenId: notificationToken.id,
-          content,
-          type,
-        });
-        await this.notificationRepository.save(notification);
+      if (notificationToken?.token) {
         await this.firebaseService.pushNotification(notificationToken.token, { title, body: content }, data);
       }
-      //return await this.notificationRepository.save(notification);
+      return null;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getNotificationsByUserId(userId: number) {
+    try
+    {
+    const notifications = await this.notificationRepository.find({ where: { userId, isRead: false }, order: { createdOn: 'DESC' } });
+    if(!notifications.length) return [];
+    return notifications.map((notification) => {
+      const data = notification.data as unknown as INotificationData;
+      return {
+        id: notification.id,
+        emoji: data.emoji,
+        postId: data.postId,
+        createdOn: notification.createdOn,
+      };
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+  async markAsRead(notificationId: number) {
+    try {
+      const notification = await this.notificationRepository.findOne({ where: { id: notificationId } });
+      if (!notification) {
+        throw new NotFoundException("Notification not found");
+      }
+      await this.notificationRepository.save({ ...notification, isRead: true });
+      return null;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
