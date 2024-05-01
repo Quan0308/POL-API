@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ResponseMessage, TransformationInterceptor, FRIEND_REQUEST_MESSAGE } from 'src/ultils/response';
 import { FriendRequestService } from './friend-requests.service';
-import { CreateFriendRequestDto, DeleteFriendRequestDto } from 'src/dto';
+import { CreateFriendRequestDto } from 'src/dto';
 
 @UseInterceptors(TransformationInterceptor)
 @Controller('friend-requests')
