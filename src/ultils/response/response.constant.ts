@@ -32,3 +32,9 @@ export const FRIEND_REQUEST_MESSAGE = {
   FRIEND_REQUEST_DELETED: 'Friend Request Deleted',
   FRIEND_REQUEST_ACCEPTED: 'Friend Request Accepted',
 };
+
+export const GROUP_MESSAGE = {
+  GROUP_CREATED: 'Group Created',
+  GROUP_UPDATED: 'Group Updated',
+  GROUP_DELETED: 'Group Deleted',
+};
