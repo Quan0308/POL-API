@@ -24,10 +24,10 @@ export class CommentsService {
       });
       await this.commentRepository.save(newComment);
 
-      const post = await this.commentRepository.findOne({ where: { postId }, relations: ['post'] });
+      const { post } = await this.commentRepository.findOne({ where: { postId }, relations: ['post'] });
       const sender = await this.commentRepository.findOne({ where: { authorId }, relations: ['author'] });
       await this.notificationService.pushNotification({
-        receiverId: post.post.authorId,
+        receiverId: post.authorId,
         content: 'Sent a comment',
         title: sender.author.username,
         type: NotificationTypeEnum.COMMENT,

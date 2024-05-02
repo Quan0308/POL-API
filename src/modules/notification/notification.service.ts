@@ -43,7 +43,7 @@ export class NotificationService {
         notificationTokenId: notificationToken?.id,
         content,
         type,
-        data
+        data,
       });
       // Send notification to the receiver
       if (notificationToken?.token) {
@@ -57,29 +57,48 @@ export class NotificationService {
   }
 
   async getNotificationsByUserId(userId: number) {
-    try
-    {
-    const notifications = await this.notificationRepository.find({ where: { userId, isRead: false }, order: { createdOn: 'DESC' } });
-    if(!notifications.length) return [];
-    return notifications.map((notification) => {
-      const data = notification.data as unknown as INotificationData;
-      return {
-        id: notification.id,
-        emoji: data.emoji,
-        postId: data.postId,
-        createdOn: notification.createdOn,
-      };
-    });
-  } catch (error) {
-    console.log(error);
+    try {
+      const notifications = await this.notificationRepository.find({
+        where: { userId, isRead: false },
+        order: { createdOn: 'DESC' },
+      });
+      if (!notifications.length) return [];
+
+      const grouped = notifications.reduce(
+        (acc, notification) => {
+          const data = notification.data as unknown as INotificationData;
+          const postId = data.postId;
+          if (!acc[postId]) {
+            acc[postId] = [];
+          }
+          acc[postId].push(notification);
+          return acc;
+        },
+        {} as Record<string, Notification[]>
+      );
+
+      const result = Object.values(grouped)
+        .flatMap((group) => group.slice(0, 2))
+        .map((notification) => {
+          const data = notification.data as unknown as INotificationData;
+          return {
+            id: notification.id,
+            emoji: data.emoji,
+            postId: data.postId,
+            createdOn: notification.createdOn,
+          };
+        });
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
 
   async markAsRead(notificationId: number) {
     try {
       const notification = await this.notificationRepository.findOne({ where: { id: notificationId } });
       if (!notification) {
-        throw new NotFoundException("Notification not found");
+        throw new NotFoundException('Notification not found');
       }
       await this.notificationRepository.save({ ...notification, isRead: true });
       return null;
