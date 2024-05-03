@@ -3,11 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Reaction } from 'src/entities/reaction.entity';
 import { Repository } from 'typeorm';
 import { CreateReactionDto } from 'src/dto';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationTypeEnum } from 'src/ultils/enums/notification-type.enum';
 @Injectable()
 export class ReactionsService {
   constructor(
     @InjectRepository(Reaction)
-    private reactionRepository: Repository<Reaction>
+    private reactionRepository: Repository<Reaction>,
+    private readonly notificationService: NotificationService
   ) {}
 
   async create(reaction: CreateReactionDto) {
@@ -15,7 +18,23 @@ export class ReactionsService {
       const newReaction = this.reactionRepository.create({
         ...reaction,
       });
-      return await this.reactionRepository.save(newReaction);
+      await this.reactionRepository.save(newReaction);
+      const { postId, authorId } = reaction;
+      const { post } = await this.reactionRepository.findOne({ where: { postId }, relations: ['post'] });
+      const sender = await this.reactionRepository.findOne({ where: { authorId }, relations: ['author'] });
+      await this.notificationService.pushNotification({
+        receiverId: post.authorId,
+        content: 'Sent a reaction',
+        title: sender.author.username,
+        type: NotificationTypeEnum.REACTION,
+        data: {
+          avatar: sender.author.avatar,
+          emoji: reaction.type,
+          type: NotificationTypeEnum.REACTION,
+          postId: post.id.toString(),
+        }
+      });
+      return null;
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();

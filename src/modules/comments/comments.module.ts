@@ -5,9 +5,15 @@ import { CommentsController } from './comments.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comment } from 'src/entities/comment.entity';
 import { PostModule } from '../posts/post.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [forwardRef(() => UsersModule), forwardRef(() => PostModule), TypeOrmModule.forFeature([Comment])],
+  imports: [
+    forwardRef(() => UsersModule),
+    forwardRef(() => PostModule),
+    NotificationModule,
+    TypeOrmModule.forFeature([Comment]),
+  ],
   controllers: [CommentsController],
   providers: [CommentsService],
   exports: [CommentsService],
