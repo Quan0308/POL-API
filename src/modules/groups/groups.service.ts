@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGroupDto } from 'src/dto/group/create-group.dto';
 import { UpdateGroupDto } from 'src/dto/group/update-group.dto';
 import { Group } from 'src/entities/group.entity';
-import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 
@@ -15,16 +14,34 @@ export class GroupsService {
     private usersService: UsersService
   ) {}
 
-  async getGroupsOfUser(ownerId: number): Promise<Group[]> {
+  async getGroupsOfUser(ownerId: number, includeMembers: boolean): Promise<Group[]> {
     try {
-      const groups = await this.groupsRepository
-        .createQueryBuilder('group')
-        .leftJoinAndSelect('group.members', 'member')
-        .select(['group.id AS id', 'group.name AS name'])
-        .addSelect('COUNT(member.id)', 'memberCount')
-        .where('group.ownerId = :ownerId', { ownerId })
-        .groupBy('group.id')
-        .getRawMany();
+      var groups;
+      if (!includeMembers)
+        groups = await this.groupsRepository
+          .createQueryBuilder('group')
+          .leftJoinAndSelect('group.members', 'member')
+          .select(['group.id AS id', 'group.name as name'])
+          .addSelect('COUNT(member.id)', 'memberCount')
+          .where('group.ownerId = :ownerId', { ownerId })
+          .groupBy('group.id')
+          .getRawMany();
+      else
+        groups = await this.groupsRepository
+          .createQueryBuilder('group')
+          .select(['group.id', 'group.name', 'group.ownerId'])
+          .leftJoin('group.members', 'members')
+          .addSelect(['members.id'])
+          .where('group.ownerId = :ownerId', { ownerId })
+          .getMany();
+
+      if (includeMembers) {
+        groups = groups.map((group: { id: number; name: string; members: { id: number }[] }) => ({
+          id: group.id,
+          name: group.name,
+          memberIds: group.members.map((member) => member.id),
+        }));
+      }
       return groups;
     } catch (error) {
       console.log(error);

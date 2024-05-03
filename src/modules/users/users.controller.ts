@@ -11,7 +11,10 @@ import {
   UploadedFile,
   Delete,
   Query,
+  ParseBoolPipe,
+  Optional,
 } from '@nestjs/common';
+import { OptionalParseBoolPipe } from 'src/pipes';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { PostService } from '../posts/post.service';
@@ -58,8 +61,11 @@ export class UsersController {
   }
 
   @Get(':userId/groups')
-  async getGroupsOfUser(@Param('userId', ParseIntPipe) userId: number) {
-    return await this.groupService.getGroupsOfUser(userId);
+  async getGroupsOfUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Query('include-members', OptionalParseBoolPipe) @Optional() includeMembers?: boolean
+  ) {
+    return await this.groupService.getGroupsOfUser(userId, includeMembers);
   }
 
   @Get(':userId/friends')
