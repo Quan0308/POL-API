@@ -102,9 +102,9 @@ export class AuthenticationService {
     let providerId = null;
 
     // Check if password is empty
-    if (password === '') {
+    if (password === '' || password === null || password === undefined) {
       user = await this.userRepository.findOne({ where: { firebaseUID } });
-
+      console.log('user', user);
       const firebaseUser = await admin.auth().getUser(firebaseUID);
 
       if (firebaseUser.providerData.length > 0) {
