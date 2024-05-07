@@ -102,9 +102,8 @@ export class AuthenticationService {
     let providerId = null;
 
     // Check if password is empty
-    if (password === '') {
+    if (password === '' || password === null || password === undefined) {
       user = await this.userRepository.findOne({ where: { firebaseUID } });
-
       const firebaseUser = await admin.auth().getUser(firebaseUID);
 
       if (firebaseUser.providerData.length > 0) {
@@ -116,9 +115,9 @@ export class AuthenticationService {
           firebaseUID,
           email,
           password,
-          username,
+          username: username ? username : firebaseUser.providerData[0].email,
         };
-        await this.createUser(createUserDto);
+        user = await this.createUser(createUserDto);
       }
     } else {
       user = await this.userRepository.findOne({ where: { username, password } });
@@ -184,6 +183,7 @@ export class AuthenticationService {
 
   async createUser(createUserDto: CreateUserDto) {
     const user = this.userRepository.create(createUserDto);
+    console.log('user', user.password);
 
     try {
       await this.userRepository.save(user);

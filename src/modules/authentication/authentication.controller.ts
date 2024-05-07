@@ -8,37 +8,43 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Post('sign-up')
-  signUp(@Body('email') email: string) {
-    return this.authenticationService.signUp(email);
+  async signUp(@Body('email') email: string) {
+    return await this.authenticationService.signUp(email);
   }
 
   @Post('reset-password')
-  resetPassword(@Body('email') email: string) {
-    return this.authenticationService.resetPassword(email);
+  async resetPassword(@Body('email') email: string) {
+    return await this.authenticationService.resetPassword(email);
   }
 
   @Post('change-password')
-  changePassword(@Body('email') email: string, @Body('password') password: string) {
-    return this.authenticationService.changePassword(email, password);
+  async changePassword(@Body('email') email: string, @Body('password') password: string) {
+    return await this.authenticationService.changePassword(email, password);
   }
 
   @Post('sign-in')
-  signIn(
+  async signIn(
     @Body('firebaseUID') firebaseUID: string,
     @Body('email') email: string,
     @Body('username') username: string,
     @Body('password') password: string
   ) {
-    return this.authenticationService.signIn(firebaseUID, email, username, password);
+    const response = await this.authenticationService.signIn(
+      firebaseUID,
+      email,
+      username,
+      password === undefined ? '' : password
+    );
+    return response;
   }
 
   @Get('otps')
-  getAllOtps() {
-    return this.authenticationService.getAllOtps();
+  async getAllOtps() {
+    return await this.authenticationService.getAllOtps();
   }
 
   @Post('otp/verification')
-  verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
-    return this.authenticationService.verifyOtp(email, otp);
+  async verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
+    return await this.authenticationService.verifyOtp(email, otp);
   }
 }

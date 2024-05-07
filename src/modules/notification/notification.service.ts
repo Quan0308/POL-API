@@ -47,6 +47,7 @@ export class NotificationService {
       });
       // Send notification to the receiver
       if (notificationToken?.token) {
+        data.avatar = data.avatar || '';
         await this.firebaseService.pushNotification(notificationToken.token, { title, body: content }, data);
       }
       return null;
