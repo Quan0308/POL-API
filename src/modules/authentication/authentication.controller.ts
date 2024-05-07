@@ -29,8 +29,12 @@ export class AuthenticationController {
     @Body('username') username: string,
     @Body('password') password: string
   ) {
-    const response = await this.authenticationService.signIn(firebaseUID, email, username, password);
-    console.log(response);
+    const response = await this.authenticationService.signIn(
+      firebaseUID,
+      email,
+      username,
+      password === undefined ? '' : password
+    );
     return response;
   }
 
