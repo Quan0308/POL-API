@@ -1,50 +1,81 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+} from 'typeorm';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { Reaction } from './reaction.entity';
 import { Group } from './group.entity';
+import { FriendRequest } from './friend-request.entity';
+import { Notification } from './notification.entity';
+import { NotificationToken } from './notification-token.entity';
 
 @Entity()
 export class User extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
-    
-    @Column()
-    username: string;
-    
-    @Column()
-    email: string;
-    
-    @Column()
-    password: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column ({ default: true })
-    isActive: boolean;
+  @Column()
+  firebaseUID: string;
 
-    @Column ()
-    createdAt: Date;
+  @Column()
+  username: string;
 
-    @Column ()
-    updatedAt: Date;
+  @Column()
+  email: string;
 
-    @Column ({ default: "System"})
-    createdBy: string;
+  @Column()
+  password: string;
 
-    @OneToMany(type => Post, post => post.author)
-    posts: Post[]
+  @Column({ default: true })
+  isActive: boolean;
 
-    @OneToMany(type => Comment, comment => comment.author)
-    comments: Comment[]
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @OneToMany(type => Reaction, reaction => reaction.author)
-    reactions: Reaction[]
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @Column({nullable: true})
-    avatar: string;
+  @Column({ default: 'System' })
+  createdBy: string;
 
-    @OneToMany(type => Group, group => group.owner)
-    groups: Group[];
+  @Column({ nullable: true })
+  avatar: string;
 
-    @OneToMany(type => Group, group => group.members)
-    memberOf: Group[];
+  // Other relationships
+  @ManyToMany((type) => User)
+  @JoinTable()
+  friends: User[];
+
+  @OneToMany((type) => Group, (group) => group.owner)
+  groups: Group[];
+
+  @OneToMany((type) => Post, (post) => post.author)
+  posts: Post[];
+
+  @OneToMany((type) => Comment, (comment) => comment.author)
+  comments: Comment[];
+
+  @OneToMany((type) => Reaction, (reaction) => reaction.author)
+  reactions: Reaction[];
+
+  @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.sender)
+  sentFriendRequests: FriendRequest[];
+
+  @OneToMany((type) => FriendRequest, (friendRequest) => friendRequest.receiver)
+  receivedFriendRequests: FriendRequest[];
+
+  @OneToMany((type) => Notification, (notification) => notification.user)
+  notifications: Notification[];
+
+  @OneToOne((type) => NotificationToken, (notificationToken) => notificationToken.user)
+  notificationToken: NotificationToken;
 }

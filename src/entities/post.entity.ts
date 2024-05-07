@@ -1,34 +1,64 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.entity";
-import { Comment } from "./comment.entity";
-import { Reaction } from "./reaction.entity";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
+import { Comment } from './comment.entity';
+import { Reaction } from './reaction.entity';
 
 @Entity()
 export class Post extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    authorId: number;
+  @Column()
+  authorId: number;
 
-    @ManyToOne(type => User, user => user.posts)
-    author: User;
+  @ManyToOne((type) => User, (user) => user.posts)
+  author: User;
 
-    @Column()
-    createdAt: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    precision: null,
+    name: 'created_at',
+  })
+  createdAt: Date;
 
-    @Column()
-    caption: string;
+  @Column()
+  caption: string;
 
-    @Column("int", {array: true, default: []})
-    visibleToIds: number[];
+  @Column({
+    type: 'int',
+    default: 0,
+    name: 'frame',
+  })
+  frame: number;
 
-    @Column()
-    imageUrl: string;
+  @Column({
+    type: 'int',
+    default: 0,
+    name: 'font',
+  })
+  font: number;
 
-    @OneToMany(type => Comment, comment => comment.post)
-    comments: Comment[]
+  @Column()
+  imageUrl: string;
 
-    @OneToMany(type => Reaction, reaction => reaction.post)
-    reactions: Reaction[]
+  @OneToMany((type) => Comment, (comment) => comment.post)
+  comments: Comment[];
+
+  @OneToMany((type) => Reaction, (reaction) => reaction.post)
+  reactions: Reaction[];
+
+  @ManyToMany((type) => User)
+  @JoinTable()
+  visibleTo: User[];
 }

@@ -6,10 +6,7 @@ import { Group } from 'src/entities/group.entity';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
-    forwardRef(() => UsersModule),
-    TypeOrmModule.forFeature([Group])
-  ],
+  imports: [forwardRef(() => UsersModule), TypeOrmModule.forFeature([Group])],
   controllers: [GroupsController],
   providers: [GroupsService],
   exports: [GroupsService],

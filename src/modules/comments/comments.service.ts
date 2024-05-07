@@ -1,40 +1,58 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentDto } from 'src/dto';
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
-import { PostService } from '../posts/post.service';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationTypeEnum } from 'src/ultils/enums/notification-type.enum';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
-    
-    @Inject(forwardRef(() => PostService))
-    private readonly postsService: PostService
+    private readonly notificationService: NotificationService
   ) {}
 
   async create(createCommentDto: CreateCommentDto) {
-    const { authorId, postId, content } = createCommentDto
-    const newComment = this.commentRepository.create({
-      authorId,
-      postId,
-      content,
-      createdAt: new Date()
-    });
-    return await this.commentRepository.save(newComment)
+    try {
+      const { authorId, postId, content } = createCommentDto;
+      const newComment = this.commentRepository.create({
+        authorId,
+        postId,
+        content,
+      });
+      await this.commentRepository.save(newComment);
+
+      const { post } = await this.commentRepository.findOne({ where: { postId }, relations: ['post'] });
+      const sender = await this.commentRepository.findOne({ where: { authorId }, relations: ['author'] });
+      await this.notificationService.pushNotification({
+        receiverId: post.authorId,
+        content: 'Sent a comment',
+        title: sender.author.username,
+        type: NotificationTypeEnum.COMMENT,
+        data: {
+          avatar: sender.author.avatar,
+          emoji: 'comment',
+          type: NotificationTypeEnum.COMMENT,
+          postId: post.id.toString(),
+        },
+      });
+      return null;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async getCommentsByPostId(postId: number) {
-    const post = await this.postsService.getPostById(postId)
-    
-    const comments = await this.commentRepository
-          .createQueryBuilder('comment')
-          .where('comment.postId = :postId', { postId: post.id })
-          .orderBy('comment.createdAt', 'DESC')
-          .getMany()
-          
-    return comments
+    return await this.commentRepository
+      .createQueryBuilder('comment')
+      .select(['comment.content', 'comment.createdAt'])
+      .leftJoin('comment.author', 'author')
+      .addSelect(['author.avatar', 'author.username'])
+      .where('comment.postId = :postId', { postId })
+      .orderBy('comment.createdAt', 'DESC')
+      .getMany();
   }
 }
